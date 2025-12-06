@@ -214,7 +214,8 @@ class NanoStart {
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-btn';
         editBtn.innerHTML = '✎';
-        editBtn.setAttribute('aria-label', 'Edit site');
+        editBtn.setAttribute('aria-label', `Edit ${site.name}`);
+        editBtn.setAttribute('title', 'Edit');
         editBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -225,7 +226,8 @@ class NanoStart {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.innerHTML = '×';
-        deleteBtn.setAttribute('aria-label', 'Delete site');
+        deleteBtn.setAttribute('aria-label', `Delete ${site.name}`);
+        deleteBtn.setAttribute('title', 'Delete');
         deleteBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
