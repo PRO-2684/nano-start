@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Nano Start</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Nano Start</h1>
+        </header>
+        
+        <main>
+            <div id="add-site-container" class="add-site-container">
+                <button id="add-site-btn" class="add-btn" aria-label="Add website">+</button>
+                <div id="add-site-form" class="add-site-form hidden">
+                    <input type="text" id="site-name" placeholder="Website name" required>
+                    <input type="url" id="site-url" placeholder="https://example.com" required>
+                    <div class="form-actions">
+                        <button id="save-site-btn" class="btn-primary">Add</button>
+                        <button id="cancel-site-btn" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="sites-container" class="sites-container">
+                <!-- Sites will be dynamically added here -->
+            </div>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
