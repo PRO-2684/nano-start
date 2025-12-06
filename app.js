@@ -42,24 +42,27 @@ class NanoStart {
         const addBtn = document.getElementById('add-site-btn');
         const saveBtn = document.getElementById('save-site-btn');
         const cancelBtn = document.getElementById('cancel-site-btn');
-        const form = document.getElementById('add-site-form');
+        const modal = document.getElementById('site-form-modal');
         const nameInput = document.getElementById('site-name');
         const urlInput = document.getElementById('site-url');
 
         addBtn.addEventListener('click', () => {
-            form.classList.toggle('hidden');
-            if (!form.classList.contains('hidden')) {
-                nameInput.focus();
-            }
+            this.openModal('add');
         });
 
         cancelBtn.addEventListener('click', () => {
-            form.classList.add('hidden');
-            this.clearForm();
+            this.closeModal();
         });
 
         saveBtn.addEventListener('click', () => {
-            this.addSite();
+            this.saveSite();
+        });
+
+        // Close modal on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeModal();
+            }
         });
 
         // Handle Enter key in form
@@ -71,24 +74,57 @@ class NanoStart {
 
         urlInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                this.addSite();
+                this.saveSite();
+            }
+        });
+
+        // Handle Escape key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeModal();
             }
         });
     }
 
-    // Clear form inputs
-    clearForm() {
-        document.getElementById('site-name').value = '';
-        document.getElementById('site-url').value = '';
-    }
-
-    // Add a new site
-    addSite() {
+    // Open modal for add or edit
+    openModal(mode, site = null) {
+        const modal = document.getElementById('site-form-modal');
+        const formTitle = document.getElementById('form-title');
         const nameInput = document.getElementById('site-name');
         const urlInput = document.getElementById('site-url');
+        const siteIdInput = document.getElementById('site-id');
+
+        if (mode === 'edit' && site) {
+            formTitle.textContent = 'Edit Website';
+            nameInput.value = site.name;
+            urlInput.value = site.url;
+            siteIdInput.value = site.id;
+        } else {
+            formTitle.textContent = 'Add Website';
+            nameInput.value = '';
+            urlInput.value = '';
+            siteIdInput.value = '';
+        }
+
+        modal.classList.remove('hidden');
+        nameInput.focus();
+    }
+
+    // Close modal
+    closeModal() {
+        const modal = document.getElementById('site-form-modal');
+        modal.classList.add('hidden');
+    }
+
+    // Save site (add or update)
+    saveSite() {
+        const nameInput = document.getElementById('site-name');
+        const urlInput = document.getElementById('site-url');
+        const siteIdInput = document.getElementById('site-id');
         
         const name = nameInput.value.trim();
         const url = urlInput.value.trim();
+        const siteId = siteIdInput.value;
 
         if (!name || !url) {
             alert('Please fill in both name and URL fields.');
@@ -103,17 +139,26 @@ class NanoStart {
             return;
         }
 
-        const site = {
-            id: Date.now().toString(),
-            name,
-            url
-        };
+        if (siteId) {
+            // Update existing site
+            const siteIndex = this.sites.findIndex(s => s.id === siteId);
+            if (siteIndex !== -1) {
+                this.sites[siteIndex].name = name;
+                this.sites[siteIndex].url = url;
+            }
+        } else {
+            // Add new site
+            const site = {
+                id: Date.now().toString(),
+                name,
+                url
+            };
+            this.sites.push(site);
+        }
 
-        this.sites.push(site);
         this.saveSites();
         this.renderSites();
-        this.clearForm();
-        document.getElementById('add-site-form').classList.add('hidden');
+        this.closeModal();
     }
 
     // Delete a site
@@ -161,6 +206,22 @@ class NanoStart {
         urlDiv.className = 'site-url';
         urlDiv.textContent = this.formatUrl(site.url);
 
+        // Card actions container
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'card-actions';
+
+        // Edit button
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.innerHTML = '✎';
+        editBtn.setAttribute('aria-label', 'Edit site');
+        editBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.openModal('edit', site);
+        });
+
+        // Delete button
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.innerHTML = '×';
@@ -171,6 +232,9 @@ class NanoStart {
             this.deleteSite(site.id);
         });
 
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(deleteBtn);
+
         // Drag and drop event listeners
         card.addEventListener('dragstart', (e) => this.handleDragStart(e));
         card.addEventListener('dragend', (e) => this.handleDragEnd(e));
@@ -179,7 +243,7 @@ class NanoStart {
         card.addEventListener('dragenter', (e) => this.handleDragEnter(e));
         card.addEventListener('dragleave', (e) => this.handleDragLeave(e));
 
-        card.appendChild(deleteBtn);
+        card.appendChild(actionsDiv);
         card.appendChild(nameDiv);
         card.appendChild(urlDiv);
 

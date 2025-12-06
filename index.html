@@ -15,22 +15,27 @@
         </header>
         
         <main>
-            <div id="add-site-container" class="add-site-container">
-                <button id="add-site-btn" class="add-btn" aria-label="Add website">+</button>
-                <div id="add-site-form" class="add-site-form hidden">
-                    <input type="text" id="site-name" placeholder="Website name" required>
-                    <input type="url" id="site-url" placeholder="https://example.com" required>
-                    <div class="form-actions">
-                        <button id="save-site-btn" class="btn-primary">Add</button>
-                        <button id="cancel-site-btn" class="btn-secondary">Cancel</button>
-                    </div>
-                </div>
-            </div>
-            
             <div id="sites-container" class="sites-container">
                 <!-- Sites will be dynamically added here -->
             </div>
         </main>
+        
+        <!-- Fixed add button in bottom right corner -->
+        <button id="add-site-btn" class="add-btn" aria-label="Add website">+</button>
+        
+        <!-- Modal form for add/edit -->
+        <div id="site-form-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="form-title">Add Website</h2>
+                <input type="text" id="site-name" placeholder="Website name" required>
+                <input type="url" id="site-url" placeholder="https://example.com" required>
+                <input type="hidden" id="site-id">
+                <div class="form-actions">
+                    <button id="save-site-btn" class="btn-primary">Save</button>
+                    <button id="cancel-site-btn" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script src="app.js"></script>
