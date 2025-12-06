@@ -1,0 +1,10 @@
+{
+    "name": "Nano Start",
+    "short_name": "Nano Start",
+    "description": "A minimal yet hackable start page",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "orientation": "any"
+}
