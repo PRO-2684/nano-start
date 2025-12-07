@@ -78,99 +78,12 @@ h1 {
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px var(--shadow);
     z-index: 100;
-}
 
-.add-btn:hover {
-    background-color: var(--btn-hover);
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px var(--shadow);
-}
-
-/* Modal for Add/Edit Form */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-}
-
-.modal.hidden {
-    display: none;
-}
-
-.modal-content {
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 450px;
-    width: 90%;
-    box-shadow: 0 8px 32px var(--shadow);
-}
-
-.modal-content h2 {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 400;
-}
-
-.modal-content input[type="text"],
-.modal-content input[type="url"] {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.modal-content input:focus {
-    outline: none;
-    border-color: var(--text-color);
-}
-
-.form-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-}
-
-.btn-primary,
-.btn-secondary {
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background-color: var(--btn-bg);
-    color: var(--btn-color);
-}
-
-.btn-primary:hover {
-    background-color: var(--btn-hover);
-}
-
-.btn-secondary {
-    background-color: transparent;
-    color: var(--text-color);
-    border: 1px solid var(--card-border);
-}
-
-.btn-secondary:hover {
-    background-color: var(--card-hover);
+    &:hover {
+        background-color: var(--btn-hover);
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px var(--shadow);
+    }
 }
 
 /* Sites Container */
@@ -198,74 +111,133 @@ h1 {
     justify-content: center;
     min-height: 150px;
     box-shadow: 0 2px 4px var(--shadow);
-}
 
-.site-card:hover {
-    background-color: var(--card-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--shadow);
-}
+    &:hover {
+        background-color: var(--card-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px var(--shadow);
 
-.site-card.dragging {
-    opacity: 0.5;
-    cursor: grabbing;
-}
+        .card-actions {
+            opacity: 1;
+        }
 
-.site-card.drag-over {
-    border: 2px dashed var(--text-color);
-}
+        .drag-handle {
+            opacity: 1;
+        }
+    }
 
-.site-name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    text-align: center;
-    word-break: break-word;
-}
+    &.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
 
-.site-url {
-    font-size: 0.85rem;
-    opacity: 0.7;
-    text-align: center;
-    word-break: break-all;
-    margin-bottom: 1rem;
-}
+    &.drag-over {
+        border: 2px dashed var(--text-color);
+    }
 
-.card-actions {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    display: flex;
-    gap: 0.25rem;
-    opacity: 0;
-    transition: all 0.2s ease;
-}
+    &.editing {
+        cursor: default;
 
-.site-card:hover .card-actions {
-    opacity: 1;
-}
+        .site-name,
+        .site-url {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            width: 100%;
 
-.edit-btn,
-.delete-btn {
-    width: 28px;
-    height: 28px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    border: 1px solid var(--card-border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    line-height: 1;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+            &:focus {
+                outline: none;
+                border-color: var(--text-color);
+            }
+        }
+    }
 
-.edit-btn:hover,
-.delete-btn:hover {
-    background-color: var(--card-hover);
-    border-color: var(--text-color);
+    .site-name {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        word-break: break-word;
+
+        &[contenteditable="true"] {
+            cursor: text;
+        }
+    }
+
+    .site-url {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        text-align: center;
+        word-break: break-all;
+        margin-bottom: 1rem;
+
+        &[contenteditable="true"] {
+            cursor: text;
+        }
+    }
+
+    .card-actions {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.25rem;
+        opacity: 0;
+        transition: all 0.2s ease;
+    }
+
+    .drag-handle {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        width: 28px;
+        height: 28px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: grab;
+        font-size: 1rem;
+        line-height: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+
+        &:hover {
+            background-color: var(--card-hover);
+            border-color: var(--text-color);
+        }
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
+    .edit-btn,
+    .delete-btn {
+        width: 28px;
+        height: 28px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        line-height: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            background-color: var(--card-hover);
+            border-color: var(--text-color);
+        }
+    }
 }
 
 /* Empty State */
@@ -300,9 +272,5 @@ h1 {
         right: 1rem;
         width: 56px;
         height: 56px;
-    }
-
-    .modal-content {
-        padding: 1.5rem;
     }
 }
