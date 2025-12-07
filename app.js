@@ -6,7 +6,6 @@ class NanoStart {
         this.container = container;
         this.sites = [];
         this.draggedElement = null;
-        this.editingCardId = null;
         this.init();
     }
 
@@ -49,21 +48,48 @@ class NanoStart {
     }
 
     // Helper: Focus and select the site name in the card
-    SelectSiteName(card) {
+    selectSiteName(card) {
         const siteName = card?.querySelector?.('.site-name');
         if (!siteName) return;
         siteName.focus();
         siteName.select();
     }
 
-    // Helper: Replace a card with a new version
-    replaceCard(siteId, siteIndex) {
-        const oldCard = document.querySelector(`[data-id="${siteId}"]`);
-        if (!oldCard) return null;
+    // Helper: Enable inputs for editing
+    enableCardEditing(card, site) {
+        card.classList.add('editing');
 
-        const newCard = this.createSiteCard(this.sites[siteIndex], siteIndex);
-        oldCard.replaceWith(newCard);
-        return newCard;
+        const nameInput = card.querySelector('.site-name');
+        const urlInput = card.querySelector('.site-url');
+
+        nameInput.toggleAttribute("readonly", false);
+        urlInput.toggleAttribute("readonly", false);
+        urlInput.value = site.url;
+
+        // Update button
+        const editBtn = card.querySelector('.edit-btn');
+        editBtn.innerHTML = '✓';
+        editBtn.setAttribute('aria-label', `Save ${site.name}`);
+        editBtn.setAttribute('title', 'Save');
+    }
+
+    // Helper: Disable inputs after editing
+    disableCardEditing(card, site) {
+        card.classList.remove('editing');
+
+        const nameInput = card.querySelector('.site-name');
+        const urlInput = card.querySelector('.site-url');
+
+        nameInput.value = site.name;
+        nameInput.toggleAttribute("readonly", true);
+        urlInput.value = this.formatUrl(site.url);
+        urlInput.toggleAttribute("readonly", true);
+
+        // Update button
+        const editBtn = card.querySelector('.edit-btn');
+        editBtn.innerHTML = '✎';
+        editBtn.setAttribute('aria-label', `Edit ${site.name}`);
+        editBtn.setAttribute('title', 'Edit');
     }
 
     // Add a new site with default values and start editing
@@ -76,23 +102,23 @@ class NanoStart {
         this.sites.push(site);
         this.saveSites();
 
-        // Set editing mode
-        this.editingCardId = site.id;
-
         // Append the new card
         const card = this.createSiteCard(site, this.sites.length - 1);
         this.container.appendChild(card);
-        this.SelectSiteName(card);
+        this.enableCardEditing(card, site);
+        this.selectSiteName(card);
     }
 
     // Start editing a card
     startEditing(siteId) {
-        const siteIndex = this.sites.findIndex(s => s.id === siteId);
-        if (siteIndex === -1) return;
+        const card = document.querySelector(`[data-id="${siteId}"]`);
+        if (!card) return;
 
-        this.editingCardId = siteId;
-        const newCard = this.replaceCard(siteId, siteIndex);
-        this.SelectSiteName(newCard);
+        const site = this.sites.find(s => s.id === siteId);
+        if (!site) return;
+
+        this.enableCardEditing(card, site);
+        this.selectSiteName(card);
     }
 
     // Save edited card
@@ -127,23 +153,20 @@ class NanoStart {
         }
 
         this.saveSites();
-        this.editingCardId = null;
 
-        // Replace only the edited card
-        this.replaceCard(siteId, siteIndex);
+        // Update card to non-editing state
+        this.disableCardEditing(oldCard, this.sites[siteIndex]);
     }
 
     // Cancel editing
-    cancelEdit() {
-        if (!this.editingCardId) return;
+    cancelEdit(card) {
+        if (!card) return;
 
-        const siteIndex = this.sites.findIndex(s => s.id === this.editingCardId);
-        const siteId = this.editingCardId;
-        this.editingCardId = null;
+        const site = this.sites.find(s => s.id === card.dataset.id);
 
-        if (siteIndex !== -1) {
-            // Replace with non-editing version
-            this.replaceCard(siteId, siteIndex);
+        if (site) {
+            // Revert to non-editing state
+            this.disableCardEditing(card, site);
         }
     }
 
@@ -178,32 +201,29 @@ class NanoStart {
 
     // Create a site card element
     createSiteCard(site, index) {
-        const isEditing = this.editingCardId === site.id;
-
         const card = document.createElement('div');
         card.className = 'site-card';
-        if (isEditing) {
-            card.classList.add('editing');
-            // Add keyboard shortcuts for editing
-            card.addEventListener('keydown', (e) => {
+        card.addEventListener('click', (e) => {
+            const isEditing = card.classList.contains('editing');
+            if (!isEditing) {
+                // Don't navigate if clicking on buttons or drag handle
+                if (!e.target.closest('button') && !e.target.closest('.drag-handle')) {
+                    window.open(site.url, '_blank', 'noopener,noreferrer');
+                }
+            }
+        });
+        card.addEventListener('keydown', (e) => {
+            const isEditing = card.classList.contains('editing');
+            if (isEditing) {
                 if (e.key === 'Escape') {
                     e.preventDefault();
-                    this.cancelEdit();
+                    this.cancelEdit(card);
                 } else if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     this.saveEdit(site.id);
                 }
-            });
-        } else {
-            // Only make it a link if not editing
-            card.style.cursor = 'pointer';
-            card.addEventListener('click', (e) => {
-                // Don't navigate if clicking on buttons
-                if (!e.target.closest('button') && !e.target.closest('.drag-handle')) {
-                    window.open(site.url, '_blank', 'noopener,noreferrer');
-                }
-            });
-        }
+            }
+        });
         card.dataset.id = site.id;
         card.dataset.index = index;
 
@@ -226,23 +246,17 @@ class NanoStart {
             this.handleDragEnd(e);
         });
 
-        const nameElement = document.createElement(isEditing ? 'input' : 'div');
+        const nameElement = document.createElement('input');
         nameElement.className = 'site-name';
-        if (isEditing) {
-            nameElement.type = 'text';
-            nameElement.value = site.name;
-        } else {
-            nameElement.textContent = site.name;
-        }
+        nameElement.type = 'text';
+        nameElement.value = site.name;
+        nameElement.toggleAttribute("readonly", true);
 
-        const urlElement = document.createElement(isEditing ? 'input' : 'div');
+        const urlElement = document.createElement('input');
         urlElement.className = 'site-url';
-        if (isEditing) {
-            urlElement.type = 'url';
-            urlElement.value = site.url;
-        } else {
-            urlElement.textContent = this.formatUrl(site.url);
-        }
+        urlElement.type = 'url';
+        urlElement.value = this.formatUrl(site.url);
+        urlElement.toggleAttribute("readonly", true);
 
         // Card actions container
         const actionsDiv = document.createElement('div');
@@ -251,25 +265,18 @@ class NanoStart {
         // Edit/Save button
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-btn';
-        if (isEditing) {
-            editBtn.innerHTML = '✓';
-            editBtn.setAttribute('aria-label', `Save ${site.name}`);
-            editBtn.setAttribute('title', 'Save');
-            editBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+        editBtn.innerHTML = '✎';
+        editBtn.setAttribute('aria-label', `Edit ${site.name}`);
+        editBtn.setAttribute('title', 'Edit');
+        editBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (card.classList.contains('editing')) {
                 this.saveEdit(site.id);
-            });
-        } else {
-            editBtn.innerHTML = '✎';
-            editBtn.setAttribute('aria-label', `Edit ${site.name}`);
-            editBtn.setAttribute('title', 'Edit');
-            editBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+            } else {
                 this.startEditing(site.id);
-            });
-        }
+            }
+        });
 
         // Delete button
         const deleteBtn = document.createElement('button');
