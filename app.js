@@ -60,23 +60,6 @@ class NanoStart {
         // Set editing mode before rendering
         this.editingCardId = site.id;
         this.renderSites();
-
-        // Focus URL field after rendering
-        setTimeout(() => {
-            const card = document.querySelector(`[data-id="${site.id}"]`);
-            if (card) {
-                const urlDiv = card.querySelector('.site-url');
-                if (urlDiv) {
-                    urlDiv.focus();
-                    // Select all text
-                    const range = document.createRange();
-                    range.selectNodeContents(urlDiv);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                }
-            }
-        }, 0);
     }
 
     // Start editing a card
@@ -151,6 +134,23 @@ class NanoStart {
             const card = this.createSiteCard(site, index);
             container.appendChild(card);
         });
+
+        // Focus URL field after rendering
+        if (this.editingCardId) {
+            const card = document.querySelector(`[data-id="${this.editingCardId}"]`);
+            if (card) {
+                const nameDiv = card.querySelector('.site-name');
+                if (nameDiv) {
+                    nameDiv.focus();
+                    // Select all text
+                    const range = document.createRange();
+                    range.selectNodeContents(nameDiv);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        }
     }
 
     // Create a site card element
