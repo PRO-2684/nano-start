@@ -161,6 +161,16 @@ class NanoStart {
         card.className = 'site-card';
         if (isEditing) {
             card.classList.add('editing');
+            // Add keyboard shortcuts for editing
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    this.cancelEdit();
+                } else if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.saveEdit(site.id);
+                }
+            });
         } else {
             // Only make it a link if not editing
             card.style.cursor = 'pointer';
