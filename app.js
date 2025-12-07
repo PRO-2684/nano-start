@@ -105,7 +105,7 @@ class NanoStart {
     }
 
     // Cancel editing
-    cancelEdit(siteId) {
+    cancelEdit() {
         this.editingCardId = null;
         this.renderSites();
     }
