@@ -2,7 +2,8 @@
 'use strict';
 
 class NanoStart {
-    constructor() {
+    constructor(container) {
+        this.container = container;
         this.sites = [];
         this.draggedElement = null;
         this.editingCardId = null;
@@ -47,6 +48,24 @@ class NanoStart {
         });
     }
 
+    // Helper: Focus and select the site name in the card
+    SelectSiteName(card) {
+        const siteName = card?.querySelector?.('.site-name');
+        if (!siteName) return;
+        siteName.focus();
+        siteName.select();
+    }
+
+    // Helper: Replace a card with a new version
+    replaceCard(siteId, siteIndex) {
+        const oldCard = document.querySelector(`[data-id="${siteId}"]`);
+        if (!oldCard) return null;
+
+        const newCard = this.createSiteCard(this.sites[siteIndex], siteIndex);
+        oldCard.replaceWith(newCard);
+        return newCard;
+    }
+
     // Add a new site with default values and start editing
     addNewSite() {
         const site = {
@@ -57,27 +76,35 @@ class NanoStart {
         this.sites.push(site);
         this.saveSites();
 
-        // Set editing mode before rendering
+        // Set editing mode
         this.editingCardId = site.id;
-        this.renderSites();
+
+        // Append the new card
+        const card = this.createSiteCard(site, this.sites.length - 1);
+        this.container.appendChild(card);
+        this.SelectSiteName(card);
     }
 
     // Start editing a card
     startEditing(siteId) {
+        const siteIndex = this.sites.findIndex(s => s.id === siteId);
+        if (siteIndex === -1) return;
+
         this.editingCardId = siteId;
-        this.renderSites();
+        const newCard = this.replaceCard(siteId, siteIndex);
+        this.SelectSiteName(newCard);
     }
 
     // Save edited card
     saveEdit(siteId) {
-        const card = document.querySelector(`[data-id="${siteId}"]`);
-        if (!card) return;
+        const oldCard = document.querySelector(`[data-id="${siteId}"]`);
+        if (!oldCard) return;
 
-        const nameDiv = card.querySelector('.site-name');
-        const urlDiv = card.querySelector('.site-url');
+        const nameInput = oldCard.querySelector('.site-name');
+        const urlInput = oldCard.querySelector('.site-url');
 
-        const name = nameDiv.textContent.trim();
-        const url = urlDiv.textContent.trim();
+        const name = nameInput.value.trim();
+        const url = urlInput.value.trim();
 
         if (!name || !url) {
             alert('Please fill in both name and URL fields.');
@@ -101,56 +128,52 @@ class NanoStart {
 
         this.saveSites();
         this.editingCardId = null;
-        this.renderSites();
+
+        // Replace only the edited card
+        this.replaceCard(siteId, siteIndex);
     }
 
     // Cancel editing
     cancelEdit() {
+        if (!this.editingCardId) return;
+
+        const siteIndex = this.sites.findIndex(s => s.id === this.editingCardId);
+        const siteId = this.editingCardId;
         this.editingCardId = null;
-        this.renderSites();
+
+        if (siteIndex !== -1) {
+            // Replace with non-editing version
+            this.replaceCard(siteId, siteIndex);
+        }
     }
 
     // Delete a site
     deleteSite(id) {
         if (confirm('Are you sure you want to delete this site?')) {
+            const card = document.querySelector(`[data-id="${id}"]`);
+            if (card) {
+                card.remove();
+            }
+
             this.sites = this.sites.filter(site => site.id !== id);
             this.saveSites();
-            this.renderSites();
+
+            // Update data-index attributes for remaining cards
+            const cards = this.container.querySelectorAll('.site-card');
+            cards.forEach((card, index) => {
+                card.dataset.index = index;
+            });
         }
     }
 
     // Render all sites
     renderSites() {
-        const container = document.getElementById('sites-container');
-
-        if (this.sites.length === 0) {
-            container.innerHTML = '<div class="empty-state">No sites yet. Click the + button to add your first site!</div>';
-            return;
-        }
-
-        container.innerHTML = '';
+        this.container.innerHTML = '';
 
         this.sites.forEach((site, index) => {
             const card = this.createSiteCard(site, index);
-            container.appendChild(card);
+            this.container.appendChild(card);
         });
-
-        // Focus URL field after rendering
-        if (this.editingCardId) {
-            const card = document.querySelector(`[data-id="${this.editingCardId}"]`);
-            if (card) {
-                const nameDiv = card.querySelector('.site-name');
-                if (nameDiv) {
-                    nameDiv.focus();
-                    // Select all text
-                    const range = document.createRange();
-                    range.selectNodeContents(nameDiv);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                }
-            }
-        }
     }
 
     // Create a site card element
@@ -203,18 +226,22 @@ class NanoStart {
             this.handleDragEnd(e);
         });
 
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'site-name';
-        nameDiv.textContent = site.name;
+        const nameElement = document.createElement(isEditing ? 'input' : 'div');
+        nameElement.className = 'site-name';
         if (isEditing) {
-            nameDiv.contentEditable = 'true';
+            nameElement.type = 'text';
+            nameElement.value = site.name;
+        } else {
+            nameElement.textContent = site.name;
         }
 
-        const urlDiv = document.createElement('div');
-        urlDiv.className = 'site-url';
-        urlDiv.textContent = isEditing ? site.url : this.formatUrl(site.url);
+        const urlElement = document.createElement(isEditing ? 'input' : 'div');
+        urlElement.className = 'site-url';
         if (isEditing) {
-            urlDiv.contentEditable = 'true';
+            urlElement.type = 'url';
+            urlElement.value = site.url;
+        } else {
+            urlElement.textContent = this.formatUrl(site.url);
         }
 
         // Card actions container
@@ -267,8 +294,8 @@ class NanoStart {
 
         card.appendChild(dragHandle);
         card.appendChild(actionsDiv);
-        card.appendChild(nameDiv);
-        card.appendChild(urlDiv);
+        card.appendChild(nameElement);
+        card.appendChild(urlElement);
 
         return card;
     }
@@ -364,10 +391,12 @@ class NanoStart {
 }
 
 // Initialize the app when DOM is ready
+function initApp() {
+    const container = document.getElementById('sites-container');
+    new NanoStart(container);
+}
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new NanoStart();
-    });
+    document.addEventListener('DOMContentLoaded', initApp);
 } else {
-    new NanoStart();
+    initApp();
 }

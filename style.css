@@ -28,6 +28,9 @@
         --input-border: #3a3a3a;
         --shadow: rgba(255, 255, 255, 0.1);
     }
+    html {
+        color-scheme: dark;
+    }
 }
 
 /* Reset and Base Styles */
@@ -42,6 +45,11 @@ body {
     color: var(--text-color);
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+input, textarea, select, button {
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .container {
@@ -91,6 +99,13 @@ h1 {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.5rem;
     margin-top: 2rem;
+
+    &:empty::before {
+        content: "No sites yet. Click the + button to add your first site!";
+        grid-column: 1 / -1;
+        text-align: center;
+        opacity: 0.6;
+    }
 }
 
 /* Site Card */
