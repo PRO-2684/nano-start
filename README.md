@@ -34,6 +34,7 @@ A minimal yet hackable browser start page.
 ## Browser Compatibility
 
 Works on all modern browsers that support:
+
 - CSS Custom Properties
 - CSS `prefers-color-scheme`
 - Service Workers

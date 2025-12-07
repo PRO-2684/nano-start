@@ -56,11 +56,11 @@ class NanoStart {
         };
         this.sites.push(site);
         this.saveSites();
-        
+
         // Set editing mode before rendering
         this.editingCardId = site.id;
         this.renderSites();
-        
+
         // Focus URL field after rendering
         setTimeout(() => {
             const card = document.querySelector(`[data-id="${site.id}"]`);
@@ -92,7 +92,7 @@ class NanoStart {
 
         const nameDiv = card.querySelector('.site-name');
         const urlDiv = card.querySelector('.site-url');
-        
+
         const name = nameDiv.textContent.trim();
         const url = urlDiv.textContent.trim();
 
@@ -139,14 +139,14 @@ class NanoStart {
     // Render all sites
     renderSites() {
         const container = document.getElementById('sites-container');
-        
+
         if (this.sites.length === 0) {
             container.innerHTML = '<div class="empty-state">No sites yet. Click the + button to add your first site!</div>';
             return;
         }
 
         container.innerHTML = '';
-        
+
         this.sites.forEach((site, index) => {
             const card = this.createSiteCard(site, index);
             container.appendChild(card);
@@ -156,7 +156,7 @@ class NanoStart {
     // Create a site card element
     createSiteCard(site, index) {
         const isEditing = this.editingCardId === site.id;
-        
+
         const card = document.createElement('div');
         card.className = 'site-card';
         if (isEditing) {
@@ -181,13 +181,13 @@ class NanoStart {
         dragHandle.setAttribute('aria-label', 'Drag to reorder');
         dragHandle.setAttribute('title', 'Drag to reorder');
         dragHandle.draggable = true;
-        
+
         // Only allow dragging from the handle
         dragHandle.addEventListener('dragstart', (e) => {
             card.draggable = true;
             this.handleDragStart(e);
         });
-        
+
         dragHandle.addEventListener('dragend', (e) => {
             card.draggable = false;
             this.handleDragEnd(e);
@@ -318,7 +318,7 @@ class NanoStart {
         e.preventDefault();
 
         const dropTarget = e.currentTarget;
-        
+
         if (this.draggedElement && this.draggedElement !== dropTarget) {
             const draggedIndex = parseInt(this.draggedElement.dataset.index);
             const targetIndex = parseInt(dropTarget.dataset.index);
