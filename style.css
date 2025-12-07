@@ -78,12 +78,12 @@ h1 {
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px var(--shadow);
     z-index: 100;
-}
 
-.add-btn:hover {
-    background-color: var(--btn-hover);
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px var(--shadow);
+    &:hover {
+        background-color: var(--btn-hover);
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px var(--shadow);
+    }
 }
 
 /* Sites Container */
@@ -111,133 +111,133 @@ h1 {
     justify-content: center;
     min-height: 150px;
     box-shadow: 0 2px 4px var(--shadow);
-}
 
-.site-card:hover {
-    background-color: var(--card-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--shadow);
-}
+    &:hover {
+        background-color: var(--card-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px var(--shadow);
 
-.site-card.dragging {
-    opacity: 0.5;
-    cursor: grabbing;
-}
+        .card-actions {
+            opacity: 1;
+        }
 
-.site-card.drag-over {
-    border: 2px dashed var(--text-color);
-}
+        .drag-handle {
+            opacity: 1;
+        }
+    }
 
-.site-name {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    text-align: center;
-    word-break: break-word;
-}
+    &.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
 
-.site-url {
-    font-size: 0.85rem;
-    opacity: 0.7;
-    text-align: center;
-    word-break: break-all;
-    margin-bottom: 1rem;
-}
+    &.drag-over {
+        border: 2px dashed var(--text-color);
+    }
 
-.card-actions {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    display: flex;
-    gap: 0.25rem;
-    opacity: 0;
-    transition: all 0.2s ease;
-}
+    &.editing {
+        cursor: default;
 
-.site-card:hover .card-actions {
-    opacity: 1;
-}
+        .site-name,
+        .site-url {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            width: 100%;
 
-.drag-handle {
-    position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
-    width: 28px;
-    height: 28px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    border: 1px solid var(--card-border);
-    border-radius: 4px;
-    cursor: grab;
-    font-size: 1rem;
-    line-height: 1;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-}
+            &:focus {
+                outline: none;
+                border-color: var(--text-color);
+            }
+        }
+    }
 
-.site-card:hover .drag-handle {
-    opacity: 1;
-}
+    .site-name {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        word-break: break-word;
 
-.drag-handle:hover {
-    background-color: var(--card-hover);
-    border-color: var(--text-color);
-}
+        &[contenteditable="true"] {
+            cursor: text;
+        }
+    }
 
-.drag-handle:active {
-    cursor: grabbing;
-}
+    .site-url {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        text-align: center;
+        word-break: break-all;
+        margin-bottom: 1rem;
 
-.edit-btn,
-.delete-btn {
-    width: 28px;
-    height: 28px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    border: 1px solid var(--card-border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    line-height: 1;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        &[contenteditable="true"] {
+            cursor: text;
+        }
+    }
 
-.edit-btn:hover,
-.delete-btn:hover {
-    background-color: var(--card-hover);
-    border-color: var(--text-color);
-}
+    .card-actions {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.25rem;
+        opacity: 0;
+        transition: all 0.2s ease;
+    }
 
-/* Editable card styles */
-.site-card.editing {
-    cursor: default;
-}
+    .drag-handle {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        width: 28px;
+        height: 28px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: grab;
+        font-size: 1rem;
+        line-height: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
 
-.site-card.editing .site-name,
-.site-card.editing .site-url {
-    background-color: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 4px;
-    padding: 0.5rem;
-    margin: 0.25rem 0;
-    width: 100%;
-}
+        &:hover {
+            background-color: var(--card-hover);
+            border-color: var(--text-color);
+        }
 
-.site-card.editing .site-name:focus,
-.site-card.editing .site-url:focus {
-    outline: none;
-    border-color: var(--text-color);
-}
+        &:active {
+            cursor: grabbing;
+        }
+    }
 
-.site-card .site-name[contenteditable="true"],
-.site-card .site-url[contenteditable="true"] {
-    cursor: text;
+    .edit-btn,
+    .delete-btn {
+        width: 28px;
+        height: 28px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        line-height: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            background-color: var(--card-hover);
+            border-color: var(--text-color);
+        }
+    }
 }
 
 /* Empty State */
@@ -272,9 +272,5 @@ h1 {
         right: 1rem;
         width: 56px;
         height: 56px;
-    }
-
-    .modal-content {
-        padding: 1.5rem;
     }
 }
