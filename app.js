@@ -237,7 +237,7 @@ class NanoStart {
         // Delete button
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
-        deleteBtn.innerHTML = '×';
+        deleteBtn.innerHTML = '🗑';
         deleteBtn.setAttribute('aria-label', `Delete ${site.name}`);
         deleteBtn.setAttribute('title', 'Delete');
         deleteBtn.addEventListener('click', (e) => {
