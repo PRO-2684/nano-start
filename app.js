@@ -5,6 +5,7 @@ class NanoStart {
     constructor() {
         this.sites = [];
         this.draggedElement = null;
+        this.editingCardId = null;
         this.init();
     }
 
@@ -40,91 +41,60 @@ class NanoStart {
     // Setup event listeners
     setupEventListeners() {
         const addBtn = document.getElementById('add-site-btn');
-        const saveBtn = document.getElementById('save-site-btn');
-        const cancelBtn = document.getElementById('cancel-site-btn');
-        const modal = document.getElementById('site-form-modal');
-        const nameInput = document.getElementById('site-name');
-        const urlInput = document.getElementById('site-url');
 
         addBtn.addEventListener('click', () => {
-            this.openModal('add');
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            this.closeModal();
-        });
-
-        saveBtn.addEventListener('click', () => {
-            this.saveSite();
-        });
-
-        // Close modal on background click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closeModal();
-            }
-        });
-
-        // Handle Enter key in form
-        nameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                urlInput.focus();
-            }
-        });
-
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.saveSite();
-            }
-        });
-
-        // Handle Escape key to close modal
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.closeModal();
-            }
+            this.addNewSite();
         });
     }
 
-    // Open modal for add or edit
-    openModal(mode, site = null) {
-        const modal = document.getElementById('site-form-modal');
-        const formTitle = document.getElementById('form-title');
-        const nameInput = document.getElementById('site-name');
-        const urlInput = document.getElementById('site-url');
-        const siteIdInput = document.getElementById('site-id');
-
-        if (mode === 'edit' && site) {
-            formTitle.textContent = 'Edit Website';
-            nameInput.value = site.name;
-            urlInput.value = site.url;
-            siteIdInput.value = site.id;
-        } else {
-            formTitle.textContent = 'Add Website';
-            nameInput.value = '';
-            urlInput.value = '';
-            siteIdInput.value = '';
-        }
-
-        modal.classList.remove('hidden');
-        nameInput.focus();
-    }
-
-    // Close modal
-    closeModal() {
-        const modal = document.getElementById('site-form-modal');
-        modal.classList.add('hidden');
-    }
-
-    // Save site (add or update)
-    saveSite() {
-        const nameInput = document.getElementById('site-name');
-        const urlInput = document.getElementById('site-url');
-        const siteIdInput = document.getElementById('site-id');
+    // Add a new site with default values and start editing
+    addNewSite() {
+        const site = {
+            id: Date.now().toString(),
+            name: 'New Site',
+            url: 'https://example.org/'
+        };
+        this.sites.push(site);
+        this.saveSites();
         
-        const name = nameInput.value.trim();
-        const url = urlInput.value.trim();
-        const siteId = siteIdInput.value;
+        // Set editing mode before rendering
+        this.editingCardId = site.id;
+        this.renderSites();
+        
+        // Focus URL field after rendering
+        setTimeout(() => {
+            const card = document.querySelector(`[data-id="${site.id}"]`);
+            if (card) {
+                const urlDiv = card.querySelector('.site-url');
+                if (urlDiv) {
+                    urlDiv.focus();
+                    // Select all text
+                    const range = document.createRange();
+                    range.selectNodeContents(urlDiv);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        }, 0);
+    }
+
+    // Start editing a card
+    startEditing(siteId) {
+        this.editingCardId = siteId;
+        this.renderSites();
+    }
+
+    // Save edited card
+    saveEdit(siteId) {
+        const card = document.querySelector(`[data-id="${siteId}"]`);
+        if (!card) return;
+
+        const nameDiv = card.querySelector('.site-name');
+        const urlDiv = card.querySelector('.site-url');
+        
+        const name = nameDiv.textContent.trim();
+        const url = urlDiv.textContent.trim();
 
         if (!name || !url) {
             alert('Please fill in both name and URL fields.');
@@ -139,26 +109,22 @@ class NanoStart {
             return;
         }
 
-        if (siteId) {
-            // Update existing site
-            const siteIndex = this.sites.findIndex(s => s.id === siteId);
-            if (siteIndex !== -1) {
-                this.sites[siteIndex].name = name;
-                this.sites[siteIndex].url = url;
-            }
-        } else {
-            // Add new site
-            const site = {
-                id: Date.now().toString(),
-                name,
-                url
-            };
-            this.sites.push(site);
+        // Update site
+        const siteIndex = this.sites.findIndex(s => s.id === siteId);
+        if (siteIndex !== -1) {
+            this.sites[siteIndex].name = name;
+            this.sites[siteIndex].url = url;
         }
 
         this.saveSites();
+        this.editingCardId = null;
         this.renderSites();
-        this.closeModal();
+    }
+
+    // Cancel editing
+    cancelEdit(siteId) {
+        this.editingCardId = null;
+        this.renderSites();
     }
 
     // Delete a site
@@ -189,38 +155,84 @@ class NanoStart {
 
     // Create a site card element
     createSiteCard(site, index) {
-        const card = document.createElement('a');
+        const isEditing = this.editingCardId === site.id;
+        
+        const card = document.createElement('div');
         card.className = 'site-card';
-        card.href = site.url;
-        card.target = '_blank';
-        card.rel = 'noopener noreferrer';
-        card.draggable = true;
+        if (isEditing) {
+            card.classList.add('editing');
+        } else {
+            // Only make it a link if not editing
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', (e) => {
+                // Don't navigate if clicking on buttons
+                if (!e.target.closest('button') && !e.target.closest('.drag-handle')) {
+                    window.open(site.url, '_blank', 'noopener,noreferrer');
+                }
+            });
+        }
         card.dataset.id = site.id;
         card.dataset.index = index;
+
+        // Drag handle
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'drag-handle';
+        dragHandle.innerHTML = '⋮⋮';
+        dragHandle.setAttribute('aria-label', 'Drag to reorder');
+        dragHandle.setAttribute('title', 'Drag to reorder');
+        dragHandle.draggable = true;
+        
+        // Only allow dragging from the handle
+        dragHandle.addEventListener('dragstart', (e) => {
+            card.draggable = true;
+            this.handleDragStart(e);
+        });
+        
+        dragHandle.addEventListener('dragend', (e) => {
+            card.draggable = false;
+            this.handleDragEnd(e);
+        });
 
         const nameDiv = document.createElement('div');
         nameDiv.className = 'site-name';
         nameDiv.textContent = site.name;
+        if (isEditing) {
+            nameDiv.contentEditable = 'true';
+        }
 
         const urlDiv = document.createElement('div');
         urlDiv.className = 'site-url';
-        urlDiv.textContent = this.formatUrl(site.url);
+        urlDiv.textContent = isEditing ? site.url : this.formatUrl(site.url);
+        if (isEditing) {
+            urlDiv.contentEditable = 'true';
+        }
 
         // Card actions container
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'card-actions';
 
-        // Edit button
+        // Edit/Save button
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-btn';
-        editBtn.innerHTML = '✎';
-        editBtn.setAttribute('aria-label', `Edit ${site.name}`);
-        editBtn.setAttribute('title', 'Edit');
-        editBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.openModal('edit', site);
-        });
+        if (isEditing) {
+            editBtn.innerHTML = '✓';
+            editBtn.setAttribute('aria-label', `Save ${site.name}`);
+            editBtn.setAttribute('title', 'Save');
+            editBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.saveEdit(site.id);
+            });
+        } else {
+            editBtn.innerHTML = '✎';
+            editBtn.setAttribute('aria-label', `Edit ${site.name}`);
+            editBtn.setAttribute('title', 'Edit');
+            editBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.startEditing(site.id);
+            });
+        }
 
         // Delete button
         const deleteBtn = document.createElement('button');
@@ -237,14 +249,13 @@ class NanoStart {
         actionsDiv.appendChild(editBtn);
         actionsDiv.appendChild(deleteBtn);
 
-        // Drag and drop event listeners
-        card.addEventListener('dragstart', (e) => this.handleDragStart(e));
-        card.addEventListener('dragend', (e) => this.handleDragEnd(e));
+        // Drag and drop event listeners (on card, not handle)
         card.addEventListener('dragover', (e) => this.handleDragOver(e));
         card.addEventListener('drop', (e) => this.handleDrop(e));
         card.addEventListener('dragenter', (e) => this.handleDragEnter(e));
         card.addEventListener('dragleave', (e) => this.handleDragLeave(e));
 
+        card.appendChild(dragHandle);
         card.appendChild(actionsDiv);
         card.appendChild(nameDiv);
         card.appendChild(urlDiv);
@@ -264,10 +275,14 @@ class NanoStart {
 
     // Drag and drop handlers
     handleDragStart(e) {
-        this.draggedElement = e.currentTarget;
-        e.currentTarget.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
+        // Find the parent card element
+        const card = e.target.closest('.site-card');
+        if (card) {
+            this.draggedElement = card;
+            card.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', card.innerHTML);
+        }
     }
 
     handleDragEnd(e) {
