@@ -286,7 +286,11 @@ class NanoStart {
     }
 
     handleDragEnd(e) {
-        e.currentTarget.classList.remove('dragging');
+        // Remove dragging class from the dragged element
+        if (this.draggedElement) {
+            this.draggedElement.classList.remove('dragging');
+            this.draggedElement = null;
+        }
         // Remove drag-over class from all cards
         document.querySelectorAll('.site-card').forEach(card => {
             card.classList.remove('drag-over');
