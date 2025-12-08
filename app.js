@@ -65,6 +65,7 @@ class NanoStart {
         nameInput.readOnly = !enable;
         urlInput.readOnly = !enable;
         urlInput.value = enable ? site.url : this.formatUrl(site.url);
+        urlInput.type = enable ? 'url' : 'text';
 
         // Update button
         const editBtn = card.querySelector('.edit-btn');
@@ -182,6 +183,7 @@ class NanoStart {
         const card = document.createElement('a');
         card.href = site.url;
         card.className = 'site-card';
+        card.draggable = false;
         card.addEventListener('click', (e) => {
             const isEditing = card.classList.contains('editing');
             if (isEditing) {
@@ -212,11 +214,9 @@ class NanoStart {
 
         // Only allow dragging from the handle
         dragHandle.addEventListener('dragstart', (e) => {
-            card.draggable = true;
             this.handleDragStart(e);
         });
         dragHandle.addEventListener('dragend', (e) => {
-            card.draggable = false;
             this.handleDragEnd(e);
         });
         dragHandle.addEventListener('click', (e) => {
@@ -232,7 +232,6 @@ class NanoStart {
 
         const urlElement = document.createElement('input');
         urlElement.className = 'site-url';
-        urlElement.type = 'url';
         urlElement.value = this.formatUrl(site.url);
         urlElement.toggleAttribute("readonly", true);
 
@@ -318,10 +317,8 @@ class NanoStart {
     }
 
     handleDragOver(e) {
-        if (e.preventDefault) {
-            e.preventDefault();
-        }
         e.dataTransfer.dropEffect = 'move';
+        e.preventDefault();
         return false;
     }
 
@@ -332,7 +329,10 @@ class NanoStart {
     }
 
     handleDragLeave(e) {
-        e.currentTarget.classList.remove('drag-over');
+        // Only remove drag-over if we're actually leaving the card, not just entering a child
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            e.currentTarget.classList.remove('drag-over');
+        }
     }
 
     handleDrop(e) {
