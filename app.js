@@ -55,41 +55,28 @@ class NanoStart {
         siteName.select();
     }
 
-    // Helper: Enable inputs for editing
-    enableCardEditing(card, site) {
-        card.classList.add('editing');
+    // Helper: Enable/disable inputs for editing
+    setCardEditing(card, site, enable) {
+        card.classList.toggle('editing', enable);
 
         const nameInput = card.querySelector('.site-name');
         const urlInput = card.querySelector('.site-url');
 
-        nameInput.toggleAttribute("readonly", false);
-        urlInput.toggleAttribute("readonly", false);
-        urlInput.value = site.url;
+        nameInput.readOnly = !enable;
+        urlInput.readOnly = !enable;
+        urlInput.value = enable ? site.url : this.formatUrl(site.url);
 
         // Update button
         const editBtn = card.querySelector('.edit-btn');
-        editBtn.innerHTML = '✓';
-        editBtn.setAttribute('aria-label', `Save ${site.name}`);
-        editBtn.setAttribute('title', 'Save');
-    }
-
-    // Helper: Disable inputs after editing
-    disableCardEditing(card, site) {
-        card.classList.remove('editing');
-
-        const nameInput = card.querySelector('.site-name');
-        const urlInput = card.querySelector('.site-url');
-
-        nameInput.value = site.name;
-        nameInput.toggleAttribute("readonly", true);
-        urlInput.value = this.formatUrl(site.url);
-        urlInput.toggleAttribute("readonly", true);
-
-        // Update button
-        const editBtn = card.querySelector('.edit-btn');
-        editBtn.innerHTML = '✎';
-        editBtn.setAttribute('aria-label', `Edit ${site.name}`);
-        editBtn.setAttribute('title', 'Edit');
+        if (enable) {
+            editBtn.innerHTML = '✓';
+            editBtn.setAttribute('aria-label', `Save ${site.name}`);
+            editBtn.setAttribute('title', 'Save');
+        } else {
+            editBtn.innerHTML = '✎';
+            editBtn.setAttribute('aria-label', `Edit ${site.name}`);
+            editBtn.setAttribute('title', 'Edit');
+        }
     }
 
     // Add a new site with default values and start editing
@@ -105,19 +92,17 @@ class NanoStart {
         // Append the new card
         const card = this.createSiteCard(site, this.sites.length - 1);
         this.container.appendChild(card);
-        this.enableCardEditing(card, site);
+        this.setCardEditing(card, site, true);
         this.selectSiteName(card);
     }
 
     // Start editing a card
     startEditing(siteId) {
         const card = document.querySelector(`[data-id="${siteId}"]`);
-        if (!card) return;
-
         const site = this.sites.find(s => s.id === siteId);
-        if (!site) return;
+        if (!card || !site) return;
 
-        this.enableCardEditing(card, site);
+        this.setCardEditing(card, site, true);
         this.selectSiteName(card);
     }
 
@@ -131,16 +116,13 @@ class NanoStart {
 
         const name = nameInput.value.trim();
         const url = urlInput.value.trim();
-
         if (!name || !url) {
             alert('Please fill in both name and URL fields.');
             return;
         }
 
         // Validate URL
-        try {
-            new URL(url);
-        } catch (error) {
+        if (!URL.canParse(url)) {
             alert('Please enter a valid URL (e.g., https://example.com)');
             return;
         }
@@ -155,18 +137,15 @@ class NanoStart {
         this.saveSites();
 
         // Update card to non-editing state
-        this.disableCardEditing(oldCard, this.sites[siteIndex]);
+        this.setCardEditing(oldCard, this.sites[siteIndex], false);
     }
 
     // Cancel editing
     cancelEdit(card) {
-        if (!card) return;
-
         const site = this.sites.find(s => s.id === card.dataset.id);
-
         if (site) {
             // Revert to non-editing state
-            this.disableCardEditing(card, site);
+            this.setCardEditing(card, site, false);
         }
     }
 
@@ -178,7 +157,8 @@ class NanoStart {
                 card.remove();
             }
 
-            this.sites = this.sites.filter(site => site.id !== id);
+            const index = this.sites.findIndex(site => site.id === id);
+            this.sites.splice(index, 1);
             this.saveSites();
 
             // Update data-index attributes for remaining cards
@@ -192,7 +172,6 @@ class NanoStart {
     // Render all sites
     renderSites() {
         this.container.innerHTML = '';
-
         this.sites.forEach((site, index) => {
             const card = this.createSiteCard(site, index);
             this.container.appendChild(card);
@@ -360,26 +339,25 @@ class NanoStart {
     }
 
     handleDrop(e) {
-        if (e.stopPropagation) {
-            e.stopPropagation();
-        }
+        e.stopPropagation();
         e.preventDefault();
 
-        const dropTarget = e.currentTarget;
-
-        if (this.draggedElement && this.draggedElement !== dropTarget) {
-            const draggedIndex = parseInt(this.draggedElement.dataset.index);
-            const targetIndex = parseInt(dropTarget.dataset.index);
+        const dropOnCard = e.currentTarget;
+        const draggedCard = this.draggedElement;
+        if (draggedCard && draggedCard !== dropOnCard) {
+            const draggedIndex = parseInt(draggedCard.dataset.index);
+            const targetIndex = parseInt(dropOnCard.dataset.index);
 
             // Reorder the sites array
             const [removed] = this.sites.splice(draggedIndex, 1);
             this.sites.splice(targetIndex, 0, removed);
-
             this.saveSites();
-            this.renderSites();
+
+            // Insert dragged card before dropOnCard (pushing others to the right)
+            dropOnCard.before(draggedCard);
         }
 
-        dropTarget.classList.remove('drag-over');
+        dropOnCard.classList.remove('drag-over');
         return false;
     }
 
