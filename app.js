@@ -160,12 +160,6 @@ class NanoStart {
             const index = this.sites.findIndex(site => site.id === id);
             this.sites.splice(index, 1);
             this.saveSites();
-
-            // Update data-index attributes for remaining cards
-            const cards = this.container.querySelectorAll('.site-card');
-            cards.forEach((card, index) => {
-                card.dataset.index = index;
-            });
         }
     }
 
@@ -203,7 +197,6 @@ class NanoStart {
             }
         });
         card.dataset.id = site.id;
-        card.dataset.index = index;
 
         // Drag handle
         const dragHandle = document.createElement('div');
@@ -339,22 +332,23 @@ class NanoStart {
         e.stopPropagation();
         e.preventDefault();
 
-        const dropOnCard = e.currentTarget;
+        const targetCard = e.currentTarget;
         const draggedCard = this.draggedElement;
-        if (draggedCard && draggedCard !== dropOnCard) {
-            const draggedIndex = parseInt(draggedCard.dataset.index);
-            const targetIndex = parseInt(dropOnCard.dataset.index);
-
-            // Reorder the sites array
-            const [removed] = this.sites.splice(draggedIndex, 1);
-            this.sites.splice(targetIndex, 0, removed);
-            this.saveSites();
+        if (draggedCard && draggedCard !== targetCard) {
+            const draggedIndex = this.sites.findIndex(site => site.id === draggedCard.dataset.id);
+            const targetIndex = this.sites.findIndex(site => site.id === targetCard.dataset.id);
 
             // Insert dragged card before dropOnCard (pushing others to the right)
-            dropOnCard.before(draggedCard);
+            targetCard.before(draggedCard);
+
+            // Reorder the sites array to match DOM\
+            const [movedSite] = this.sites.splice(draggedIndex, 1);
+            const newTargetIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+            this.sites.splice(newTargetIndex, 0, movedSite);
+            this.saveSites();
         }
 
-        dropOnCard.classList.remove('drag-over');
+        targetCard.classList.remove('drag-over');
         return false;
     }
 
