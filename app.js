@@ -108,11 +108,11 @@ class NanoStart {
 
     // Save edited card
     saveEdit(siteId) {
-        const oldCard = document.querySelector(`[data-id="${siteId}"]`);
-        if (!oldCard) return;
+        const card = document.querySelector(`[data-id="${siteId}"]`);
+        if (!card) return;
 
-        const nameInput = oldCard.querySelector('.site-name');
-        const urlInput = oldCard.querySelector('.site-url');
+        const nameInput = card.querySelector('.site-name');
+        const urlInput = card.querySelector('.site-url');
 
         const name = nameInput.value.trim();
         const url = urlInput.value.trim();
@@ -136,8 +136,9 @@ class NanoStart {
 
         this.saveSites();
 
-        // Update card to non-editing state
-        this.setCardEditing(oldCard, this.sites[siteIndex], false);
+        // Update card
+        card.href = url;
+        this.setCardEditing(card, this.sites[siteIndex], false);
     }
 
     // Cancel editing
@@ -180,15 +181,13 @@ class NanoStart {
 
     // Create a site card element
     createSiteCard(site, index) {
-        const card = document.createElement('div');
+        const card = document.createElement('a');
+        card.href = site.url;
         card.className = 'site-card';
         card.addEventListener('click', (e) => {
             const isEditing = card.classList.contains('editing');
-            if (!isEditing) {
-                // Don't navigate if clicking on buttons or drag handle
-                if (!e.target.closest('button') && !e.target.closest('.drag-handle')) {
-                    window.open(site.url, '_blank', 'noopener,noreferrer');
-                }
+            if (isEditing) {
+                e.preventDefault();
             }
         });
         card.addEventListener('keydown', (e) => {
@@ -219,10 +218,13 @@ class NanoStart {
             card.draggable = true;
             this.handleDragStart(e);
         });
-
         dragHandle.addEventListener('dragend', (e) => {
             card.draggable = false;
             this.handleDragEnd(e);
+        });
+        dragHandle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
         });
 
         const nameElement = document.createElement('input');
