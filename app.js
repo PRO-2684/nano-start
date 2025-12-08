@@ -1,7 +1,7 @@
 // nano-start - Browser start page with vanilla JavaScript
 'use strict';
 
-class NanoStart {
+class SiteManager {
     constructor(container) {
         this.container = container;
         this.sites = [];
@@ -366,10 +366,29 @@ class NanoStart {
     }
 }
 
+
+// Initialize and update clock
+function initClock() {
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const clockElement = document.getElementById('clock');
+        if (clockElement) {
+            clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+    };
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
 // Initialize the app when DOM is ready
 function initApp() {
     const container = document.getElementById('sites-container');
-    new NanoStart(container);
+    new SiteManager(container);
+    initClock();
 }
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
