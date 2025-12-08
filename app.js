@@ -70,11 +70,9 @@ class NanoStart {
         const editBtn = card.querySelector('.edit-btn');
         if (enable) {
             editBtn.innerHTML = '✓';
-            editBtn.setAttribute('aria-label', `Save ${site.name}`);
             editBtn.setAttribute('title', 'Save');
         } else {
             editBtn.innerHTML = '✎';
-            editBtn.setAttribute('aria-label', `Edit ${site.name}`);
             editBtn.setAttribute('title', 'Edit');
         }
     }
@@ -209,7 +207,6 @@ class NanoStart {
         const dragHandle = document.createElement('div');
         dragHandle.className = 'drag-handle';
         dragHandle.innerHTML = '⋮⋮';
-        dragHandle.setAttribute('aria-label', 'Drag to reorder');
         dragHandle.setAttribute('title', 'Drag to reorder');
         dragHandle.draggable = true;
 
@@ -247,7 +244,6 @@ class NanoStart {
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-btn';
         editBtn.innerHTML = '✎';
-        editBtn.setAttribute('aria-label', `Edit ${site.name}`);
         editBtn.setAttribute('title', 'Edit');
         editBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -263,7 +259,6 @@ class NanoStart {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.innerHTML = '🗑';
-        deleteBtn.setAttribute('aria-label', `Delete ${site.name}`);
         deleteBtn.setAttribute('title', 'Delete');
         deleteBtn.addEventListener('click', (e) => {
             e.preventDefault();
