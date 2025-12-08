@@ -2,15 +2,21 @@
 'use strict';
 
 const CACHE_NAME = 'nano-start-v1';
+const ICON_CACHE_NAME = 'icons-v1';
 const urlsToCache = [
-    '/',
+    '/app.js',
+    '/components/clock.js',
+    '/components/site.js',
     '/index.html',
+    '/manifest.json',
     '/style.css',
-    '/app.js'
 ];
 
 // Install event - cache files
 self.addEventListener('install', (event) => {
+    // Take control immediately
+    self.skipWaiting();
+
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
@@ -23,46 +29,47 @@ self.addEventListener('install', (event) => {
     );
 });
 
+// Helper to fetch and cache
+async function fetchAndCache(request, cacheName) {
+    try {
+        const response = await fetch(request);
+        if (response && (response.status === 200 || response.status === 0 || response.type === 'basic')) {
+            const cache = await caches.open(cacheName);
+            cache.put(request, response.clone());
+        }
+        return response;
+    } catch (error) {
+        const cached = await caches.match(request);
+        return cached || new Response('You are offline', { status: 503 });
+    }
+}
+
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
+    const requestUrl = new URL(event.request.url);
+    if (requestUrl.pathname === "/") {
+        requestUrl.pathname = "/index.html";
+    }
+    const isAppResource = requestUrl.origin === self.location.origin && urlsToCache.includes(requestUrl.pathname);
 
-                // Clone the request
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then((response) => {
-                    // Check if valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-
-                    // Clone the response
-                    const responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME)
-                        .then((cache) => {
-                            cache.put(event.request, responseToCache);
-                        });
-
-                    return response;
-                });
-            })
-            .catch(() => {
-                // Return a custom offline page if available
-                return caches.match('/index.html');
-            })
-    );
+    if (isAppResource) {
+        // App resources: Cache first, then network
+        event.respondWith(
+            caches.match(requestUrl, { ignoreSearch: true })
+                .then(response => response || fetchAndCache(event.request, CACHE_NAME))
+        );
+    } else {
+        // Icons: Network first, then cache
+        event.respondWith(fetchAndCache(event.request, ICON_CACHE_NAME));
+    }
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-    const cacheWhitelist = [CACHE_NAME];
+    // Take control of all clients immediately
+    event.waitUntil(clients.claim());
+
+    const cacheWhitelist = [CACHE_NAME, ICON_CACHE_NAME];
 
     event.waitUntil(
         caches.keys().then((cacheNames) => {

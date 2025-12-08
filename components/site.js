@@ -57,7 +57,7 @@ class SiteManager {
     // Helper: Check if icon is URL or text/emoji
     isIconUrl(icon) {
         if (!icon) return false;
-        return icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:');
+        return URL.canParse(icon);
     }
 
     // Helper: Enable/disable inputs for editing
@@ -278,6 +278,12 @@ class SiteManager {
         urlInput.readonly = true;
         urlInput.type = 'text';
 
+        // Site info container (name + url)
+        const siteInfo = document.createElement('div');
+        siteInfo.className = 'site-info';
+        siteInfo.appendChild(nameInput);
+        siteInfo.appendChild(urlInput);
+
         // Card actions container
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'card-actions';
@@ -320,8 +326,7 @@ class SiteManager {
         card.appendChild(dragHandle);
         card.appendChild(actionsDiv);
         card.appendChild(iconElement);
-        card.appendChild(nameInput);
-        card.appendChild(urlInput);
+        card.appendChild(siteInfo);
 
         return card;
     }
