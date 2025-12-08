@@ -1,19 +1,25 @@
 // Digital clock
 
-function initClock() {
-    function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const clockElement = document.getElementById('clock');
-        if (clockElement) {
-            clockElement.textContent = `${hours}:${minutes}:${seconds}`;
-        }
-    };
+function preciseClock() {
+    const now = new Date();
+    const ms = now.getMilliseconds();
 
-    updateClock();
-    setInterval(updateClock, 1000);
+    // Calculate time until the next second mark
+    const delay = 1000 - ms;
+
+    // Update the display
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+
+    // Schedule the next update
+    setTimeout(preciseClock, delay);
 }
 
-export { initClock };
+export { preciseClock };
