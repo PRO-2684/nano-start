@@ -54,6 +54,12 @@ class SiteManager {
         siteName.select();
     }
 
+    // Helper: Check if icon is URL or text/emoji
+    isIconUrl(icon) {
+        if (!icon) return false;
+        return icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:');
+    }
+
     // Helper: Enable/disable inputs for editing
     setCardEditing(card, site, enable) {
         card.classList.toggle('editing', enable);
@@ -82,13 +88,14 @@ class SiteManager {
         const site = {
             id: Date.now().toString(),
             name: 'New Site',
-            url: 'https://example.org/'
+            url: 'https://example.org/',
+            icon: '🌐'
         };
         this.sites.push(site);
         this.saveSites();
 
         // Append the new card
-        const card = this.createSiteCard(site, this.sites.length - 1);
+        const card = this.createSiteCard(site);
         this.container.appendChild(card);
         this.setCardEditing(card, site, true);
         this.selectSiteName(card);
@@ -130,6 +137,7 @@ class SiteManager {
         if (siteIndex !== -1) {
             this.sites[siteIndex].name = name;
             this.sites[siteIndex].url = url;
+            // Icon is updated separately via click handler
         }
 
         this.saveSites();
@@ -165,14 +173,14 @@ class SiteManager {
     // Render all sites
     renderSites() {
         this.container.innerHTML = '';
-        this.sites.forEach((site, index) => {
-            const card = this.createSiteCard(site, index);
+        this.sites.forEach((site) => {
+            const card = this.createSiteCard(site);
             this.container.appendChild(card);
         });
     }
 
     // Create a site card element
-    createSiteCard(site, index) {
+    createSiteCard(site) {
         const card = document.createElement('a');
         card.href = site.url;
         card.className = 'site-card';
@@ -214,6 +222,48 @@ class SiteManager {
         dragHandle.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+        });
+
+        // Icon element
+        const iconElement = document.createElement('div');
+        iconElement.className = 'site-icon';
+        const icon = site.icon || '🌐';
+        if (this.isIconUrl(icon)) {
+            const img = document.createElement('img');
+            img.src = icon;
+            img.alt = site.name;
+            iconElement.appendChild(img);
+        } else {
+            iconElement.textContent = icon;
+        }
+
+        // Click to edit icon in edit mode
+        iconElement.addEventListener('click', (e) => {
+            const isEditing = card.classList.contains('editing');
+            if (isEditing) {
+                e.preventDefault();
+                e.stopPropagation();
+                const newIcon = prompt('Enter emoji or image URL:', icon);
+                if (newIcon !== null) {
+                    // Update site data
+                    const siteIndex = this.sites.findIndex(s => s.id === site.id);
+                    if (siteIndex !== -1) {
+                        this.sites[siteIndex].icon = newIcon.trim();
+                        this.saveSites();
+                    }
+
+                    // Update icon display
+                    iconElement.innerHTML = '';
+                    if (this.isIconUrl(newIcon)) {
+                        const img = document.createElement('img');
+                        img.src = newIcon;
+                        img.alt = site.name;
+                        iconElement.appendChild(img);
+                    } else {
+                        iconElement.textContent = newIcon;
+                    }
+                }
+            }
         });
 
         const nameInput = document.createElement('input');
@@ -269,6 +319,7 @@ class SiteManager {
 
         card.appendChild(dragHandle);
         card.appendChild(actionsDiv);
+        card.appendChild(iconElement);
         card.appendChild(nameInput);
         card.appendChild(urlInput);
 
