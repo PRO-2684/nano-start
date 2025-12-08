@@ -216,16 +216,17 @@ class SiteManager {
             e.stopPropagation();
         });
 
-        const nameElement = document.createElement('input');
-        nameElement.className = 'site-name';
-        nameElement.type = 'text';
-        nameElement.value = site.name;
-        nameElement.toggleAttribute("readonly", true);
+        const nameInput = document.createElement('input');
+        nameInput.className = 'site-name';
+        nameInput.type = 'text';
+        nameInput.value = site.name;
+        nameInput.readonly = true;
 
-        const urlElement = document.createElement('input');
-        urlElement.className = 'site-url';
-        urlElement.value = this.formatUrl(site.url);
-        urlElement.toggleAttribute("readonly", true);
+        const urlInput = document.createElement('input');
+        urlInput.className = 'site-url';
+        urlInput.value = this.formatUrl(site.url);
+        urlInput.readonly = true;
+        urlInput.type = 'text';
 
         // Card actions container
         const actionsDiv = document.createElement('div');
@@ -268,8 +269,8 @@ class SiteManager {
 
         card.appendChild(dragHandle);
         card.appendChild(actionsDiv);
-        card.appendChild(nameElement);
-        card.appendChild(urlElement);
+        card.appendChild(nameInput);
+        card.appendChild(urlInput);
 
         return card;
     }
