@@ -131,12 +131,13 @@ header {
 
 .search-result-item {
     padding: 0.75em 1em;
-    cursor: pointer;
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
     gap: 0.75em;
     border-bottom: 1px solid var(--card-border);
+    text-decoration: none;
+    color: inherit;
 
     &:last-child {
         border-bottom: none;

@@ -53,17 +53,13 @@ self.addEventListener('fetch', (event) => {
         requestUrl.pathname = "/";
     }
     const isAppResource = requestUrl.origin === self.location.origin && APP_RESOURCE.includes(requestUrl.pathname);
+    const cacheName = isAppResource ? CACHE_NAME : ICON_CACHE_NAME;
 
-    if (isAppResource) {
-        // App resources: Cache first, then network
-        event.respondWith(
-            caches.match(requestUrl, { ignoreSearch: true })
-                .then(response => response || fetchAndCache(event.request, CACHE_NAME))
-        );
-    } else {
-        // Icons: Network first, then cache
-        event.respondWith(fetchAndCache(event.request, ICON_CACHE_NAME));
-    }
+    // Cache first strategy for both app resources and icons
+    event.respondWith(
+        caches.match(isAppResource ? requestUrl : event.request, { ignoreSearch: true })
+            .then(response => response || fetchAndCache(event.request, cacheName))
+    );
 });
 
 // Activate event - clean up old caches

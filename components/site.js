@@ -185,6 +185,7 @@ class SiteManager {
         card.href = site.url;
         card.className = 'site-card';
         card.draggable = false;
+        card.rel = 'noopener noreferrer';
         card.addEventListener('click', (e) => {
             const isEditing = card.classList.contains('editing');
             if (isEditing) {
