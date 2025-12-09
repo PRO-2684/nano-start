@@ -38,7 +38,13 @@ class SearchManager {
                 this.openHighlighted();
             } else if (e.key === 'Escape') {
                 e.preventDefault();
-                this.clear();
+                if (this.input.value.trim() === '') {
+                    // Blur input if empty
+                    this.input.blur();
+                } else {
+                    // Otherwise clear input
+                    this.clear();
+                }
             }
         });
 
@@ -46,6 +52,14 @@ class SearchManager {
         document.addEventListener('click', (e) => {
             if (!this.input.contains(e.target) && !this.resultsContainer.contains(e.target)) {
                 this.hideResults();
+            }
+        });
+
+        // Enter to focus input
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.activeElement !== this.input) {
+                this.input.focus();
+                e.preventDefault();
             }
         });
     }
@@ -78,7 +92,13 @@ class SearchManager {
         this.resultsContainer.innerHTML = '';
         this.highlightedIndex = 0;
 
-        // Google search option (always first)
+        // Filtered sites
+        this.results.forEach((site, index) => {
+            const item = this.createResultItem(site, index + 1);
+            this.resultsContainer.appendChild(item);
+        });
+
+        // Google search option (always last)
         const googleItem = this.createResultItem({
             name: `Search Google for "${query}"`,
             url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
@@ -86,12 +106,6 @@ class SearchManager {
             isGoogle: true
         }, 0);
         this.resultsContainer.appendChild(googleItem);
-
-        // Filtered sites
-        this.results.forEach((site, index) => {
-            const item = this.createResultItem(site, index + 1);
-            this.resultsContainer.appendChild(item);
-        });
 
         this.resultsContainer.hidden = false;
         this.updateHighlight();

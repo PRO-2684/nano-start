@@ -8,6 +8,7 @@ const APP_RESOURCE = [
     '/app.js',
     '/favicon.svg',
     '/components/clock.js',
+    '/components/search.js',
     '/components/site.js',
     '/manifest.json',
     '/style.css',
