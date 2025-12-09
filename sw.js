@@ -5,6 +5,7 @@ const CACHE_NAME = 'nano-start-v1';
 const ICON_CACHE_NAME = 'icons-v1';
 const urlsToCache = [
     '/app.js',
+    '/favicon.svg',
     '/components/clock.js',
     '/components/site.js',
     '/index.html',
