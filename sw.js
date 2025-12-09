@@ -3,7 +3,7 @@
 
 const CACHE_NAME = 'nano-start-v1';
 const ICON_CACHE_NAME = 'icons-v1';
-const urlsToCache = [
+const APP_RESOURCE = [
     '/',
     '/app.js',
     '/favicon.svg',
@@ -22,7 +22,7 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => {
                 console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                return cache.addAll(APP_RESOURCE);
             })
             .catch((error) => {
                 console.error('Cache installation failed:', error);
@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
     if (requestUrl.pathname === "/index.html") {
         requestUrl.pathname = "/";
     }
-    const isAppResource = requestUrl.origin === self.location.origin && urlsToCache.includes(requestUrl.pathname);
+    const isAppResource = requestUrl.origin === self.location.origin && APP_RESOURCE.includes(requestUrl.pathname);
 
     if (isAppResource) {
         // App resources: Cache first, then network

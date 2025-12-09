@@ -1,12 +1,17 @@
 'use strict';
 import { SiteManager } from "./components/site.js";
+import { SearchManager } from "./components/search.js";
 import { preciseClock } from "./components/clock.js";
-
-// Initialize and update clock
 
 function initApp() {
     const container = document.getElementById('sites-container');
-    new SiteManager(container);
+    const siteManager = new SiteManager(container);
+
+    // Initialize search
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    new SearchManager(searchInput, searchResults, siteManager);
+
     preciseClock();
 }
 
