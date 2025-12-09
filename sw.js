@@ -4,11 +4,11 @@
 const CACHE_NAME = 'nano-start-v1';
 const ICON_CACHE_NAME = 'icons-v1';
 const urlsToCache = [
+    '/',
     '/app.js',
     '/favicon.svg',
     '/components/clock.js',
     '/components/site.js',
-    '/index.html',
     '/manifest.json',
     '/style.css',
 ];
@@ -48,8 +48,8 @@ async function fetchAndCache(request, cacheName) {
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
     const requestUrl = new URL(event.request.url);
-    if (requestUrl.pathname === "/") {
-        requestUrl.pathname = "/index.html";
+    if (requestUrl.pathname === "/index.html") {
+        requestUrl.pathname = "/";
     }
     const isAppResource = requestUrl.origin === self.location.origin && urlsToCache.includes(requestUrl.pathname);
 
