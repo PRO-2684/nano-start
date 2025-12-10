@@ -5,10 +5,19 @@ class SearchManager {
         this.input = inputElement;
         this.resultsContainer = resultsElement;
         this.siteManager = siteManager;
-        this.highlightedIndex = 0;
         this.debounceTimer = null;
 
         this.init();
+    }
+
+    get highlightedIndex() {
+        const index = this.resultsContainer.querySelector('.search-result-item.highlighted')?.dataset.index;
+        return index !== undefined ? parseInt(index, 10) : -1;
+    }
+
+    set highlightedIndex(value) {
+        this.resultsContainer.children[this.highlightedIndex]?.classList.remove('highlighted');
+        this.resultsContainer.children[value]?.classList.add('highlighted');
     }
 
     init() {
@@ -32,6 +41,12 @@ class SearchManager {
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 this.highlightPrevious();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                this.highlightedIndex = 0;
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                this.highlightedIndex = this.resultsContainer.childElementCount - 1;
             } else if (e.key === 'Enter') {
                 e.preventDefault();
                 this.resultsContainer.children[this.highlightedIndex]?.dispatchEvent(
@@ -90,7 +105,6 @@ class SearchManager {
 
     renderResults(query, results) {
         this.resultsContainer.innerHTML = '';
-        this.highlightedIndex = 0;
 
         // Google search option (always last)
         const googleResult = {
@@ -106,8 +120,8 @@ class SearchManager {
             this.resultsContainer.appendChild(item);
         });
 
+        this.highlightedIndex = 0;
         this.resultsContainer.hidden = false;
-        this.updateHighlight();
     }
 
     createResultItem(data, index) {
@@ -177,7 +191,6 @@ class SearchManager {
 
         const itemCount = this.resultsContainer.childElementCount;
         this.highlightedIndex = (this.highlightedIndex + 1) % itemCount;
-        this.updateHighlight();
     }
 
     highlightPrevious() {
@@ -185,24 +198,7 @@ class SearchManager {
 
         const itemCount = this.resultsContainer.childElementCount;
         this.highlightedIndex = (this.highlightedIndex - 1 + itemCount) % itemCount;
-        this.updateHighlight();
     }
-
-    updateHighlight() {
-        const items = this.resultsContainer.children;
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.toggle('highlighted', i === this.highlightedIndex);
-        }
-    }
-
-    // openHighlighted(e) {
-    //     const items = this.resultsContainer.children;
-    //     const highlightedItem = items[this.highlightedIndex];
-
-    //     if (highlightedItem) {
-    //         highlightedItem.click();
-    //     }
-    // }
 
     hideResults() {
         this.resultsContainer.hidden = true;
