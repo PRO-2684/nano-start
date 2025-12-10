@@ -66,6 +66,7 @@ class SiteManager extends EventTarget {
         const urlInput = card.querySelector('.site-url');
 
         nameInput.readOnly = !enable;
+        nameInput.value = site.name;
         urlInput.readOnly = !enable;
         urlInput.value = enable ? site.url : this.formatUrl(site.url);
         urlInput.type = enable ? 'url' : 'text';
