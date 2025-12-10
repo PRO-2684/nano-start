@@ -12,6 +12,7 @@ const APP_RESOURCE = [
     '/components/site.js',
     '/manifest.json',
     '/style.css',
+    'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.mjs',
 ];
 
 // Install event - cache files
@@ -46,18 +47,25 @@ async function fetchAndCache(request, cacheName) {
     }
 }
 
+// Helper to determine if a request is for an app resource
+function isAppResource(requestUrl) {
+    return APP_RESOURCE.some(urlStr => {
+        const url = new URL(urlStr, self.location.origin);
+        return url.origin === requestUrl.origin && url.pathname === requestUrl.pathname;
+    });
+}
+
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
     const requestUrl = new URL(event.request.url);
     if (requestUrl.pathname === "/index.html") {
         requestUrl.pathname = "/";
     }
-    const isAppResource = requestUrl.origin === self.location.origin && APP_RESOURCE.includes(requestUrl.pathname);
     const cacheName = isAppResource ? CACHE_NAME : ICON_CACHE_NAME;
 
     // Cache first strategy for both app resources and icons
     event.respondWith(
-        caches.match(isAppResource ? requestUrl : event.request, { ignoreSearch: true })
+        caches.match(isAppResource(requestUrl) ? requestUrl : event.request, { ignoreSearch: true })
             .then(response => response || fetchAndCache(event.request, cacheName))
     );
 });

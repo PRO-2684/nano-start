@@ -1,7 +1,10 @@
 // Site manager: Manages the list of sites, adding, editing, deleting, and rendering them
 
-class SiteManager {
+const STORAGE_KEY = 'nano-start-sites';
+
+class SiteManager extends EventTarget {
     constructor(container) {
+        super();
         this.container = container;
         this.sites = [];
         this.draggedElement = null;
@@ -18,7 +21,7 @@ class SiteManager {
     // Load sites from localStorage
     loadSites() {
         try {
-            const stored = localStorage.getItem('nano-start-sites');
+            const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 this.sites = JSON.parse(stored);
             }
@@ -28,13 +31,14 @@ class SiteManager {
         }
     }
 
-    // Save sites to localStorage
+    // Save sites to localStorage and dispatch update event
     saveSites() {
         try {
-            localStorage.setItem('nano-start-sites', JSON.stringify(this.sites));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.sites));
         } catch (error) {
             console.error('Error saving sites to localStorage:', error);
         }
+        this.dispatchEvent(new Event('sitesUpdated'));
     }
 
     // Setup event listeners

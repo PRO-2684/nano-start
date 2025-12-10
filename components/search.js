@@ -1,4 +1,5 @@
 // SearchManager: Handles search input, filtering sites, and keyboard navigation
+import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.mjs';
 
 class SearchManager {
     constructor(inputElement, resultsElement, siteManager) {
@@ -6,8 +7,21 @@ class SearchManager {
         this.resultsContainer = resultsElement;
         this.siteManager = siteManager;
         this.debounceTimer = null;
+        this.fuse = new Fuse(this.siteManager.sites, {
+            keys: [{
+                name: 'name',
+                weight: 0.7,
+            }, {
+                name: 'url',
+                weight: 0.3,
+                }],
+            useExtendedSearch: true, // https://www.fusejs.io/examples.html#extended-search
+            threshold: 0.6,
+            ignoreDiacritics: true,
+            ignoreLocation: true,
+        });
 
-        this.init();
+        this.setupEventListeners();
     }
 
     get highlightedIndex() {
@@ -18,10 +32,6 @@ class SearchManager {
     set highlightedIndex(value) {
         this.resultsContainer.children[this.highlightedIndex]?.classList.remove('highlighted');
         this.resultsContainer.children[value]?.classList.add('highlighted');
-    }
-
-    init() {
-        this.setupEventListeners();
     }
 
     setupEventListeners() {
@@ -79,6 +89,11 @@ class SearchManager {
                 e.preventDefault();
             }
         });
+
+        // Listen for site list updates to refresh Fuse index
+        this.siteManager.addEventListener('sitesUpdated', () => {
+            this.fuse.setCollection(this.siteManager.sites);
+        });
     }
 
     handleSearch(query) {
@@ -94,13 +109,9 @@ class SearchManager {
     }
 
     filterSites(query) {
-        const sites = this.siteManager.sites;
-        const lowerQuery = query.toLowerCase();
-
-        return sites.filter(site =>
-            site.name.toLowerCase().includes(lowerQuery) ||
-            site.url.toLowerCase().includes(lowerQuery)
-        );
+        this.fuse.setCollection(this.siteManager.sites);
+        const fuseResults = this.fuse.search(query);
+        return fuseResults.map(result => result.item);
     }
 
     renderResults(query, results) {
