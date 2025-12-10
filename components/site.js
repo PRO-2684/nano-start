@@ -54,12 +54,6 @@ class SiteManager {
         siteName.select();
     }
 
-    // Helper: Check if icon is URL or text/emoji
-    isIconUrl(icon) {
-        if (!icon) return false;
-        return URL.canParse(icon);
-    }
-
     // Helper: Enable/disable inputs for editing
     setCardEditing(card, site, enable) {
         card.classList.toggle('editing', enable);
@@ -228,14 +222,13 @@ class SiteManager {
         // Icon element
         const iconElement = document.createElement('div');
         iconElement.className = 'site-icon';
-        const icon = site.icon || '🌐';
-        if (this.isIconUrl(icon)) {
+        if (URL.canParse(site.icon)) {
             const img = document.createElement('img');
-            img.src = icon;
+            img.src = site.icon;
             img.alt = site.name;
             iconElement.appendChild(img);
         } else {
-            iconElement.textContent = icon;
+            iconElement.textContent = site.icon;
         }
 
         // Click to edit icon in edit mode
@@ -244,7 +237,7 @@ class SiteManager {
             if (isEditing) {
                 e.preventDefault();
                 e.stopPropagation();
-                const newIcon = prompt('Enter emoji or image URL:', icon);
+                const newIcon = prompt('Enter emoji or image URL:', site.icon);
                 if (newIcon !== null) {
                     // Update site data
                     const siteIndex = this.sites.findIndex(s => s.id === site.id);
@@ -255,7 +248,7 @@ class SiteManager {
 
                     // Update icon display
                     iconElement.innerHTML = '';
-                    if (this.isIconUrl(newIcon)) {
+                    if (URL.canParse(newIcon)) {
                         const img = document.createElement('img');
                         img.src = newIcon;
                         img.alt = site.name;

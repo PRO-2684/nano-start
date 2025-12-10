@@ -135,9 +135,7 @@ class SearchManager {
         const iconDiv = document.createElement('div');
         iconDiv.className = 'result-icon';
 
-        if (!data.icon) {
-            iconDiv.textContent = '🌐';
-        } else if (this.isIconUrl(data.icon)) {
+        if (URL.canParse(data.icon)) {
             const img = document.createElement('img');
             img.src = data.icon;
             img.alt = data.name;
@@ -170,11 +168,6 @@ class SearchManager {
         });
 
         return item;
-    }
-
-    isIconUrl(icon) {
-        if (!icon) return false;
-        return URL.canParse(icon);
     }
 
     formatUrl(url) {
