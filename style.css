@@ -10,7 +10,6 @@
     --btn-hover: #333333;
     --input-bg: #ffffff;
     --input-border: #cccccc;
-    --shadow: rgba(0, 0, 0, 0.1);
 }
 
 /* Dark Theme using prefers-color-scheme */
@@ -26,7 +25,6 @@
         --btn-hover: #e0e0e0;
         --input-bg: #2a2a2a;
         --input-border: #3a3a3a;
-        --shadow: rgba(255, 255, 255, 0.1);
     }
     html {
         color-scheme: dark;
@@ -94,16 +92,15 @@ header {
     width: 100%;
     padding: 0.75em 1em;
     font-size: 1em;
-    background-color: var(--card-bg);
+    background-color: transparent;
     color: var(--text-color);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
+    border: none;
+    border-bottom: 1px solid var(--card-border);
     outline: none;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease;
 
     &:focus {
         border-color: var(--text-color);
-        box-shadow: 0 2px 8px var(--shadow);
     }
 
     &::placeholder {
@@ -121,7 +118,6 @@ header {
     border-radius: 8px;
     max-height: 400px;
     overflow-y: auto;
-    box-shadow: 0 4px 12px var(--shadow);
     z-index: 100;
 
     &[hidden] {
@@ -131,11 +127,13 @@ header {
 
 .search-result-item {
     padding: 0.75em 1em;
-    transition: background-color 0.2s ease;
+    transition-property: background-color, border-left-color;
+    transition-duration: 0.2s;
     display: flex;
     align-items: center;
     gap: 0.75em;
     border-bottom: 1px solid var(--card-border);
+    border-left: 2px solid transparent;
     text-decoration: none;
     color: inherit;
 
@@ -145,6 +143,10 @@ header {
 
     &:hover, &.highlighted {
         background-color: var(--card-hover);
+    }
+
+    &.highlighted {
+        border-left-color: var(--text-color);
     }
 
     .result-icon {
@@ -197,14 +199,14 @@ header {
     border: 2px solid var(--card-border);
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px var(--shadow);
+    /* transition: all 0.2s ease; */
+    transition-property: background-color, transform;
+    transition-duration: 0.2s;
     z-index: 100;
 
     &:hover {
         background-color: var(--btn-hover);
         transform: scale(1.1);
-        box-shadow: 0 6px 16px var(--shadow);
     }
 }
 
@@ -230,7 +232,7 @@ header {
     border-radius: 8px;
     padding: 1em;
     cursor: pointer;
-    transition-property: background-color, transform, box-shadow, border;
+    transition-property: background-color, transform, border;
     transition-duration: 0.4s;
     transition-timing-function: cubic-bezier(0, 0.73, 0.48, 1);
     text-decoration: none;
@@ -239,7 +241,6 @@ header {
     flex-direction: row;
     align-items: center;
     gap: 0.75em;
-    box-shadow: 0 2px 4px var(--shadow);
     max-width: 16em;
 
     &:hover {
@@ -247,7 +248,6 @@ header {
         &:not(.editing) {
             background-color: var(--card-hover);
             transform: translateY(-2px); /* transform: rotate(3deg); */
-            box-shadow: 0 4px 8px var(--shadow);
         }
 
         .card-actions, .drag-handle {
