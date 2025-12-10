@@ -271,12 +271,12 @@ class SiteManager {
         nameInput.className = 'site-name';
         nameInput.type = 'text';
         nameInput.value = site.name;
-        nameInput.readonly = true;
+        nameInput.readOnly = true;
 
         const urlInput = document.createElement('input');
         urlInput.className = 'site-url';
         urlInput.value = this.formatUrl(site.url);
-        urlInput.readonly = true;
+        urlInput.readOnly = true;
         urlInput.type = 'text';
 
         // Site info container (name + url)
