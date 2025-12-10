@@ -34,7 +34,10 @@ class SearchManager {
                 this.highlightPrevious();
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                this.openHighlighted();
+                this.resultsContainer.children[this.highlightedIndex]?.dispatchEvent(
+                    // Delegate to highlighted item's click event, keeping modifiers
+                    new MouseEvent('click', e)
+                );
             } else if (e.key === 'Escape') {
                 e.preventDefault();
                 if (this.input.value.trim() === '') {
@@ -192,14 +195,14 @@ class SearchManager {
         }
     }
 
-    openHighlighted() {
-        const items = this.resultsContainer.children;
-        const highlightedItem = items[this.highlightedIndex];
+    // openHighlighted(e) {
+    //     const items = this.resultsContainer.children;
+    //     const highlightedItem = items[this.highlightedIndex];
 
-        if (highlightedItem) {
-            highlightedItem.click();
-        }
-    }
+    //     if (highlightedItem) {
+    //         highlightedItem.click();
+    //     }
+    // }
 
     hideResults() {
         this.resultsContainer.hidden = true;
