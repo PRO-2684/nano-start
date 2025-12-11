@@ -8,46 +8,67 @@ A minimal yet hackable browser start page.
 - 📌 **Pin & Reorder**: Add your favorite websites and reorder them with drag & drop
 - 💾 **localStorage**: All preferences are saved locally in your browser
 - 🎨 **Adaptive Theme**: Automatic light and dark theme using CSS `prefers-color-scheme`
-- 📱 **Offline Support**: Service worker enables offline access
+- 📱 **Offline First**: Service worker enables offline-first access
 - ⚡ **Fast & Lightweight**: No dependencies, minimal footprint
 
 ## Usage
 
 ### Quick Start
 
-1. Clone or download this repository
-2. Open `index.html` in your browser
-3. Set it as your browser's start page
+1. Visit [Nano Start](https://nano-start.pro2684.pages.dev/) in your browser
+2. Set it as your browser's start page
+3. You can also use extensions like [New Tab Redirect](https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna) to set it as your browser's new tab page
 
-### Adding Sites
+### Pinned Websites
+
+#### Adding Sites
 
 1. Click the **+** button
-2. Enter the website name and URL
-3. Click **Add**
+2. Edit the website name, URL and icon
+    - Click on the icon to edit; You can provide text, emoji or urls
+3. Click the **✓** button or press `Enter`
 
-### Managing Sites
+#### Editing Sites
 
-- **Reorder**: Drag and drop cards to reorder them
-- **Delete**: Hover over a card and click the **×** button in the top-right corner
-- **Visit**: Click on any card to open the website
+1. Hover over the site card and press the **✎** button
+2. Edit the website name, URL and icon
+    - Click on the icon to edit; You can provide text, emoji or urls
+3. Click the **✓** button or press `Enter`
+
+#### Deleting Sites
+
+1. Hover over the site card and press the **🗑** button
+2. Press the **🗑** button again to confirm, or press `Esc` if you regretted
+
+#### Ordering Sites
+
+1. Hover over the site card and hold the **⋮⋮** button
+2. Drag around and drop on your preferred location
+3. The dragged site will be moved before the destination card
+
+### Search Bar
+
+- The search bar will be focused by default on page load
+- You can type words to search pinned websites, or search Google using your query
+- To navigate through the list, you can use `↑`, `↓`, `Home`, `End`
+- To activate an item, you can click it, or press `Enter` if its highlighted
+- You can press `Esc` to clear the input and quit search
+
+### Other
+
+You can see more options when hovering over the add button **+**:
+
+- **🗑️**: Clears icon cache, useful if your pinned sites updated their favicons
+- **📤**: Exports pinned sites as a JSON file
+- **📥**: Imports pinned sites from a JSON file (appends to the list)
+
+### Advanced Customization
+
+TBD
 
 ## Browser Compatibility
 
-Works on all modern browsers that support:
-
-- CSS Custom Properties
-- CSS `prefers-color-scheme`
-- Service Workers
-- localStorage
-- Drag and Drop API
-
-## Customization
-
-The code is intentionally simple and hackable. You can easily customize:
-
-- **Colors**: Edit CSS variables in `style.css`
-- **Layout**: Modify the grid layout in `.sites-container`
-- **Functionality**: Extend `app.js` with additional features
+Works on most modern browsers. Backwards compatibility is not guaranteed.
 
 ## License
 
