@@ -78,7 +78,7 @@ class SiteManager extends EventTarget {
         urlInput.value = enable ? site.url : this.formatUrl(site.url);
         urlInput.type = enable ? 'url' : 'text';
 
-        // Update button
+        // Update edit button
         const editBtn = card.querySelector('.edit-btn');
         if (enable) {
             editBtn.innerHTML = '✓';
@@ -172,20 +172,28 @@ class SiteManager extends EventTarget {
     }
 
     /**
+     * Clear delete confirmation state.
+     * @param {HTMLElement} card - The site card element.
+     */
+    clearDeleteConfirmation(card) {
+        const deleteBtn = card.querySelector('.delete-btn');
+        deleteBtn.classList.remove('delete-confirm');
+        deleteBtn.setAttribute('title', 'Delete');
+    }
+
+    /**
      * Delete a site after confirmation.
      * @param {string} id - The ID of the site to delete.
      */
     deleteSite(id) {
-        if (confirm('Are you sure you want to delete this site?')) {
-            const card = document.querySelector(`[data-id="${id}"]`);
-            if (card) {
-                card.remove();
-            }
-
-            const index = this.sites.findIndex(site => site.id === id);
-            this.sites.splice(index, 1);
-            this.saveSites();
+        const card = document.querySelector(`[data-id="${id}"]`);
+        if (card) {
+            card.remove();
         }
+
+        const index = this.sites.findIndex(site => site.id === id);
+        this.sites.splice(index, 1);
+        this.saveSites();
     }
 
     /** Render all sites in the container. */
@@ -220,6 +228,7 @@ class SiteManager extends EventTarget {
         });
         card.addEventListener('keydown', (e) => {
             const isEditing = card.classList.contains('editing');
+            this.clearDeleteConfirmation(card);
             if (isEditing) {
                 if (e.key === 'Escape') {
                     e.preventDefault();
@@ -337,7 +346,14 @@ class SiteManager extends EventTarget {
         deleteBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            this.deleteSite(site.id);
+
+            const deleteConfirm = deleteBtn.classList.contains('delete-confirm');
+            if (deleteConfirm) {
+                this.deleteSite(site.id);
+            } else {
+                deleteBtn.classList.add('delete-confirm');
+                deleteBtn.setAttribute('title', 'Click again to confirm deletion');
+            }
         });
 
         actionsDiv.appendChild(editBtn);

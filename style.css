@@ -212,7 +212,7 @@ header {
     transition-duration: 0.3s;
     transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
     opacity: 0;
-    translate: 0 20px;
+    translate: 0 1em;
     pointer-events: none;
     display: flex;
     align-items: center;
@@ -428,8 +428,7 @@ header {
         }
     }
 
-    .edit-btn,
-    .delete-btn {
+    .edit-btn, .delete-btn {
         width: 28px;
         height: 28px;
         background-color: var(--card-bg);
@@ -447,6 +446,16 @@ header {
         &:hover {
             background-color: var(--card-hover);
             border-color: var(--text-color);
+        }
+    }
+
+    .delete-btn.delete-confirm {
+        background-color: #ff4444;
+        color: white;
+        border-color: #cc0000;
+
+        &:hover {
+            background-color: #cc0000;
         }
     }
 }
