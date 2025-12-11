@@ -15,7 +15,7 @@ A minimal yet hackable browser start page.
 
 ### Quick Start
 
-1. Visit [Nano Start](https://nano-start.pro2684.pages.dev/) in your browser
+1. Visit [Nano Start](https://nano-start.pages.dev/) in your browser
 2. Set it as your browser's start page
 3. You can also use extensions like [New Tab Redirect](https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna) to set it as your browser's new tab page
 
