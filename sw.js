@@ -8,6 +8,7 @@ const APP_RESOURCE = [
     '/',
     '/app.js',
     '/favicon.svg',
+    '/components/buttons.js',
     '/components/clock.js',
     '/components/search.js',
     '/components/site.js',
@@ -90,4 +91,29 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+});
+
+// Message event - handle commands from the app
+self.addEventListener('message', (event) => {
+    if (event.data.type === 'CLEAR_ICON_CACHE') {
+        event.waitUntil(
+            caches.delete(ICON_CACHE_NAME)
+                .then(() => {
+                    console.log('Icon cache cleared');
+                    // Send confirmation back to the client
+                    event.source.postMessage({
+                        type: 'ICON_CACHE_CLEARED',
+                        success: true
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error clearing icon cache:', error);
+                    event.source.postMessage({
+                        type: 'ICON_CACHE_CLEARED',
+                        success: false,
+                        error: error.message
+                    });
+                })
+        );
+    }
 });

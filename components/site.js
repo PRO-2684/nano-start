@@ -5,25 +5,23 @@ class SiteManager extends EventTarget {
     /**
      * Create a new SiteManager instance.
      * @param {HTMLElement} container - The container element for site cards.
-     * @param {HTMLElement} addBtn - The button element to add new sites.
      */
-    constructor(container, addBtn) {
+    constructor(container) {
         super();
         this.container = container;
+        /**
+         * Stored list of sites.
+         * @type {Array<{id: string, name: string, url: string, icon: string}>}
+        */
         this.sites = [];
         this.draggedElement = null;
-        this.init(addBtn);
+        this.init();
     }
 
-    /**
-     * Initialize the site manager: load sites, setup event listeners, render sites, register service worker.
-     * @param {HTMLElement} addBtn - The button element to add new sites.
-     */
-    init(addBtn) {
+    /** Initialize the site manager: load sites, setup event listeners, render sites, register service worker. */
+    init() {
         this.loadSites();
-        this.setupEventListeners(addBtn);
         this.renderSites();
-        this.registerServiceWorker();
     }
 
     /** Load sites from localStorage. */
@@ -47,16 +45,6 @@ class SiteManager extends EventTarget {
             console.error('Error saving sites to localStorage:', error);
         }
         this.dispatchEvent(new Event('sitesUpdated'));
-    }
-
-    /**
-     * Setup event listeners for adding new sites.
-     * @param {HTMLElement} addBtn - The button element to add new sites.
-     */
-    setupEventListeners(addBtn) {
-        addBtn.addEventListener('click', () => {
-            this.addNewSite();
-        });
     }
 
     /**
@@ -475,17 +463,57 @@ class SiteManager extends EventTarget {
         return false;
     }
 
-    /** Register service worker for offline support and caching. */
-    registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.log('Service Worker registration failed:', error);
-                });
+    /**
+     * Import sites from a JSON file (appends to existing sites).
+     * @param {Array} jsonData - The array of site objects to import.
+     * @returns {number} The number of successfully imported sites.
+     */
+    importSites(jsonData) {
+        // Validate and append sites
+        let importedCount = 0;
+        let id = Date.now();
+        for (const site of jsonData) {
+            if (site.name && site.url && site.icon) {
+                site.id = (id++).toString();
+                this.sites.push(site);
+                importedCount++;
+            } else {
+                console.warn('Skipping invalid site:', site);
+            }
         }
+
+        if (importedCount > 0) {
+            this.saveSites();
+            this.renderSites();
+        }
+        return importedCount;
+    }
+
+    /**
+     * Export sites to a JSON file.
+     * @returns {number} The number of exported sites.
+     */
+    exportSites() {
+        if (this.sites.length === 0) {
+            return 0;
+        }
+
+        const dataStr = JSON.stringify(this.sites.map(
+            site => ({name: site.name, url: site.url, icon: site.icon}) // remove id for export
+        ), null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nano-start-sites-${new Date().toISOString().split('T')[0]}.json`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        return this.sites.length;
     }
 }
 export { SiteManager };

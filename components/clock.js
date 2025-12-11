@@ -1,5 +1,4 @@
-// Digital clock
-
+/** Sets up a precise digital clock. */
 function preciseClock() {
     const now = new Date();
     const ms = now.getMilliseconds();

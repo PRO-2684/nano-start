@@ -21,8 +21,21 @@
         <!-- Sites will be dynamically added here -->
     </div>
 
-    <!-- Fixed add button in bottom right corner -->
-    <button id="add-site-btn" class="add-btn" aria-label="Add website">+</button>
+    <!-- Fixed button group in bottom right corner -->
+    <div class="btn-group">
+        <button id="import-btn" class="action-btn" title="Import sites">
+            <span>📥</span>
+        </button>
+        <button id="export-btn" class="action-btn" title="Export sites">
+            <span>📤</span>
+        </button>
+        <button id="clear-cache-btn" class="action-btn" title="Clear icon cache">
+            <span>🗑️</span>
+        </button>
+        <button id="add-site-btn" class="primary-action-btn" title="Add website">+</button>
+    </div>
+
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
 
     <script type="module" src="app.js"></script>
 </body>
