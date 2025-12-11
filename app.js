@@ -5,7 +5,10 @@ import { preciseClock } from "./components/clock.js";
 
 function initApp() {
     const container = document.getElementById('sites-container');
-    const siteManager = new SiteManager(container);
+
+    // Initialize site manager
+    const addBtn = document.getElementById('add-site-btn');
+    const siteManager = new SiteManager(container, addBtn);
 
     // Initialize search
     const searchInput = document.getElementById('search-input');

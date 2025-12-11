@@ -5,19 +5,23 @@ class SiteManager extends EventTarget {
     /**
      * Create a new SiteManager instance.
      * @param {HTMLElement} container - The container element for site cards.
+     * @param {HTMLElement} addBtn - The button element to add new sites.
      */
-    constructor(container) {
+    constructor(container, addBtn) {
         super();
         this.container = container;
         this.sites = [];
         this.draggedElement = null;
-        this.init();
+        this.init(addBtn);
     }
 
-    /** Initialize the site manager: load sites, setup event listeners, render sites, register service worker. */
-    init() {
+    /**
+     * Initialize the site manager: load sites, setup event listeners, render sites, register service worker.
+     * @param {HTMLElement} addBtn - The button element to add new sites.
+     */
+    init(addBtn) {
         this.loadSites();
-        this.setupEventListeners();
+        this.setupEventListeners(addBtn);
         this.renderSites();
         this.registerServiceWorker();
     }
@@ -45,10 +49,11 @@ class SiteManager extends EventTarget {
         this.dispatchEvent(new Event('sitesUpdated'));
     }
 
-    /** Setup event listeners for adding new sites. */
-    setupEventListeners() {
-        const addBtn = document.getElementById('add-site-btn');
-
+    /**
+     * Setup event listeners for adding new sites.
+     * @param {HTMLElement} addBtn - The button element to add new sites.
+     */
+    setupEventListeners(addBtn) {
         addBtn.addEventListener('click', () => {
             this.addNewSite();
         });
