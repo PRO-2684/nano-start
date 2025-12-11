@@ -1,8 +1,9 @@
 // Service Worker for nano-start
 'use strict';
 
-const CACHE_NAME = 'nano-start-v1';
-const ICON_CACHE_NAME = 'icons-v1';
+const VERSION = '0.1.0';
+const CACHE_NAME = `nano-start-${VERSION}`;
+const ICON_CACHE_NAME = `icons-${VERSION}`;
 const APP_RESOURCE = [
     '/',
     '/app.js',
@@ -61,7 +62,7 @@ self.addEventListener('fetch', (event) => {
     if (requestUrl.pathname === "/index.html") {
         requestUrl.pathname = "/";
     }
-    const cacheName = isAppResource ? CACHE_NAME : ICON_CACHE_NAME;
+    const cacheName = isAppResource(requestUrl) ? CACHE_NAME : ICON_CACHE_NAME;
 
     // Cache first strategy for both app resources and icons
     event.respondWith(

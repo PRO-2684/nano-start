@@ -104,8 +104,18 @@ class SearchManager {
             return;
         }
 
-        const results = this.filterSites(query);
-        this.renderResults(query, results);
+        const results = this.getResults(query);
+        this.renderResults(results);
+    }
+
+    getResults(query) {
+        const siteResults = this.filterSites(query);
+        const googleResult = {
+            name: `Search Google for "${query}"`,
+            url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+            icon: '🔍'
+        };
+        return [...siteResults, googleResult];
     }
 
     filterSites(query) {
@@ -114,19 +124,10 @@ class SearchManager {
         return fuseResults.map(result => result.item);
     }
 
-    renderResults(query, results) {
+    renderResults(results) {
         this.resultsContainer.innerHTML = '';
 
-        // Google search option (always last)
-        const googleResult = {
-            name: `Search Google for "${query}"`,
-            url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-            icon: '🔍'
-        };
-
-        const allResults = [...results, googleResult];
-
-        allResults.forEach((result, index) => {
+        results.forEach((result, index) => {
             const item = this.createResultItem(result, index);
             this.resultsContainer.appendChild(item);
         });
