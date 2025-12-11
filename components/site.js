@@ -1,8 +1,11 @@
-// Site manager: Manages the list of sites, adding, editing, deleting, and rendering them
-
 const STORAGE_KEY = 'nano-start-sites';
 
+/** Manages the list of sites, adding, editing, deleting, and rendering. */
 class SiteManager extends EventTarget {
+    /**
+     * Create a new SiteManager instance.
+     * @param {HTMLElement} container - The container element for site cards.
+     */
     constructor(container) {
         super();
         this.container = container;
@@ -11,6 +14,7 @@ class SiteManager extends EventTarget {
         this.init();
     }
 
+    /** Initialize the site manager: load sites, setup event listeners, render sites, register service worker. */
     init() {
         this.loadSites();
         this.setupEventListeners();
@@ -18,7 +22,7 @@ class SiteManager extends EventTarget {
         this.registerServiceWorker();
     }
 
-    // Load sites from localStorage
+    /** Load sites from localStorage. */
     loadSites() {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
@@ -31,7 +35,7 @@ class SiteManager extends EventTarget {
         }
     }
 
-    // Save sites to localStorage and dispatch update event
+    /** Save sites to localStorage and dispatch update event. */
     saveSites() {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.sites));
@@ -41,7 +45,7 @@ class SiteManager extends EventTarget {
         this.dispatchEvent(new Event('sitesUpdated'));
     }
 
-    // Setup event listeners
+    /** Setup event listeners for adding new sites. */
     setupEventListeners() {
         const addBtn = document.getElementById('add-site-btn');
 
@@ -50,7 +54,10 @@ class SiteManager extends EventTarget {
         });
     }
 
-    // Helper: Focus and select the site name in the card
+    /**
+     * Focus and select the site name input in the given card.
+     * @param {HTMLElement} card - The site card element.
+     */
     selectSiteName(card) {
         const siteName = card?.querySelector?.('.site-name');
         if (!siteName) return;
@@ -58,7 +65,14 @@ class SiteManager extends EventTarget {
         siteName.select();
     }
 
-    // Helper: Enable/disable inputs for editing
+    /**
+     * Enable or disable editing mode for a site card.
+     * @param {HTMLElement} card - The site card element.
+     * @param {Object} site - The site data object.
+     * @param {string} site.name - The site name.
+     * @param {string} site.url - The site URL.
+     * @param {boolean} enable - Whether to enable editing mode.
+     */
     setCardEditing(card, site, enable) {
         card.classList.toggle('editing', enable);
 
@@ -82,7 +96,7 @@ class SiteManager extends EventTarget {
         }
     }
 
-    // Add a new site with default values and start editing
+    /** Add a new site with default values and start editing. */
     addNewSite() {
         const site = {
             id: Date.now().toString(),
@@ -100,7 +114,10 @@ class SiteManager extends EventTarget {
         this.selectSiteName(card);
     }
 
-    // Start editing a card
+    /**
+     * Start editing a site card.
+     * @param {string} siteId - The ID of the site to edit.
+     */
     startEditing(siteId) {
         const card = document.querySelector(`[data-id="${siteId}"]`);
         const site = this.sites.find(s => s.id === siteId);
@@ -110,7 +127,10 @@ class SiteManager extends EventTarget {
         this.selectSiteName(card);
     }
 
-    // Save edited card
+    /**
+     * Save changes to a site card.
+     * @param {string} siteId - The ID of the site to save.
+     */
     saveEdit(siteId) {
         const card = document.querySelector(`[data-id="${siteId}"]`);
         if (!card) return;
@@ -146,7 +166,10 @@ class SiteManager extends EventTarget {
         this.setCardEditing(card, this.sites[siteIndex], false);
     }
 
-    // Cancel editing
+    /**
+     * Cancel editing and revert to non-editing state.
+     * @param {HTMLElement} card - The site card element.
+     */
     cancelEdit(card) {
         const site = this.sites.find(s => s.id === card.dataset.id);
         if (site) {
@@ -155,7 +178,10 @@ class SiteManager extends EventTarget {
         }
     }
 
-    // Delete a site
+    /**
+     * Delete a site after confirmation.
+     * @param {string} id - The ID of the site to delete.
+     */
     deleteSite(id) {
         if (confirm('Are you sure you want to delete this site?')) {
             const card = document.querySelector(`[data-id="${id}"]`);
@@ -169,7 +195,7 @@ class SiteManager extends EventTarget {
         }
     }
 
-    // Render all sites
+    /** Render all sites in the container. */
     renderSites() {
         this.container.innerHTML = '';
         this.sites.forEach((site) => {
@@ -178,7 +204,15 @@ class SiteManager extends EventTarget {
         });
     }
 
-    // Create a site card element
+    /**
+     * Create a site card element with all event listeners.
+     * @param {Object} site - The site data object.
+     * @param {string} site.id - The unique site ID.
+     * @param {string} site.name - The site name.
+     * @param {string} site.url - The site URL.
+     * @param {string} site.icon - The site icon (emoji or URL).
+     * @returns {HTMLAnchorElement} The created site card element.
+     */
     createSiteCard(site) {
         const card = document.createElement('a');
         card.href = site.url;
@@ -330,7 +364,11 @@ class SiteManager extends EventTarget {
         return card;
     }
 
-    // Format URL for display
+    /**
+     * Format URL for display by extracting hostname.
+     * @param {string} url - The full URL.
+     * @returns {string} The hostname or original URL if parsing fails.
+     */
     formatUrl(url) {
         try {
             const urlObj = new URL(url);
@@ -340,7 +378,10 @@ class SiteManager extends EventTarget {
         }
     }
 
-    // Drag and drop handlers
+    /**
+     * Handle drag start event.
+     * @param {DragEvent} e - The drag event.
+     */
     handleDragStart(e) {
         // Find the parent card element
         const card = e.target.closest('.site-card');
@@ -352,6 +393,10 @@ class SiteManager extends EventTarget {
         }
     }
 
+    /**
+     * Handle drag end event.
+     * @param {DragEvent} e - The drag event.
+     */
     handleDragEnd(e) {
         // Remove dragging class from the dragged element
         if (this.draggedElement) {
@@ -364,18 +409,31 @@ class SiteManager extends EventTarget {
         });
     }
 
+    /**
+     * Handle drag over event.
+     * @param {DragEvent} e - The drag event.
+     * @returns {boolean} False to allow drop.
+     */
     handleDragOver(e) {
         e.dataTransfer.dropEffect = 'move';
         e.preventDefault();
         return false;
     }
 
+    /**
+     * Handle drag enter event.
+     * @param {DragEvent} e - The drag event.
+     */
     handleDragEnter(e) {
         if (e.currentTarget !== this.draggedElement) {
             e.currentTarget.classList.add('drag-over');
         }
     }
 
+    /**
+     * Handle drag leave event.
+     * @param {DragEvent} e - The drag event.
+     */
     handleDragLeave(e) {
         // Only remove drag-over if we're actually leaving the card, not just entering a child
         if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -383,6 +441,11 @@ class SiteManager extends EventTarget {
         }
     }
 
+    /**
+     * Handle drop event and reorder sites.
+     * @param {DragEvent} e - The drag event.
+     * @returns {boolean} False to prevent default behavior.
+     */
     handleDrop(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -407,7 +470,7 @@ class SiteManager extends EventTarget {
         return false;
     }
 
-    // Register service worker for offline support
+    /** Register service worker for offline support and caching. */
     registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')

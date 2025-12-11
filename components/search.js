@@ -1,7 +1,20 @@
-// SearchManager: Handles search input, filtering sites, and keyboard navigation
 import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.mjs';
 
+/**
+ * @typedef {Object} SearchResult
+ * @property {string} name - The result name.
+ * @property {string} url - The result URL.
+ * @property {string} icon - The result icon (emoji or URL).
+ */
+
+/** Manages search functionality with fuzzy matching and keyboard navigation. */
 class SearchManager {
+    /**
+     * Create a new SearchManager instance.
+     * @param {HTMLInputElement} inputElement - The search input element.
+     * @param {HTMLElement} resultsElement - The container for search results.
+     * @param {import('./site.js').SiteManager} siteManager - The site manager instance.
+     */
     constructor(inputElement, resultsElement, siteManager) {
         this.input = inputElement;
         this.resultsContainer = resultsElement;
@@ -24,16 +37,25 @@ class SearchManager {
         this.setupEventListeners();
     }
 
+    /**
+     * Get the index of the currently highlighted result item.
+     * @returns {number} The index of the highlighted item, or -1 if none.
+     */
     get highlightedIndex() {
         const index = this.resultsContainer.querySelector('.search-result-item.highlighted')?.dataset.index;
         return index !== undefined ? parseInt(index, 10) : -1;
     }
 
+    /**
+     * Set the highlighted result item by index.
+     * @param {number} value - The index to highlight.
+     */
     set highlightedIndex(value) {
         this.resultsContainer.children[this.highlightedIndex]?.classList.remove('highlighted');
         this.resultsContainer.children[value]?.classList.add('highlighted');
     }
 
+    /** Setup all event listeners for search input, keyboard navigation, and site updates. */
     setupEventListeners() {
         // Input change with debounce
         this.input.addEventListener('input', (e) => {
@@ -96,6 +118,10 @@ class SearchManager {
         });
     }
 
+    /**
+     * Handle search query and render results.
+     * @param {string} query - The search query.
+     */
     handleSearch(query) {
         query = query.trim();
 
@@ -108,6 +134,11 @@ class SearchManager {
         this.renderResults(results);
     }
 
+    /**
+     * Get search results including filtered sites and Google search option.
+     * @param {string} query - The search query.
+     * @returns {SearchResult[]} Array of result objects with name, url, and icon properties.
+     */
     getResults(query) {
         const siteResults = this.filterSites(query);
         const googleResult = {
@@ -118,12 +149,21 @@ class SearchManager {
         return [...siteResults, googleResult];
     }
 
+    /**
+     * Filter sites using fuzzy search.
+     * @param {string} query - The search query.
+     * @returns {SearchResult[]} Array of matching site objects.
+     */
     filterSites(query) {
         this.fuse.setCollection(this.siteManager.sites);
         const fuseResults = this.fuse.search(query);
         return fuseResults.map(result => result.item);
     }
 
+    /**
+     * Render search results in the results container.
+     * @param {SearchResult[]} results - Array of result objects to render.
+     */
     renderResults(results) {
         this.resultsContainer.innerHTML = '';
 
@@ -136,6 +176,12 @@ class SearchManager {
         this.resultsContainer.hidden = false;
     }
 
+    /**
+     * Create a search result item element.
+     * @param {SearchResult} data - The result data object.
+     * @param {number} index - The index of this result in the list.
+     * @returns {HTMLAnchorElement} The created result item element.
+     */
     createResultItem(data, index) {
         const item = document.createElement('a');
         item.className = 'search-result-item';
@@ -182,6 +228,11 @@ class SearchManager {
         return item;
     }
 
+    /**
+     * Format URL for display by extracting hostname.
+     * @param {string} url - The full URL.
+     * @returns {string} The hostname or original URL if parsing fails.
+     */
     formatUrl(url) {
         try {
             const urlObj = new URL(url);
@@ -191,6 +242,7 @@ class SearchManager {
         }
     }
 
+    /** Highlight the next result item (wraps to first). */
     highlightNext() {
         if (this.resultsContainer.hidden) return;
 
@@ -198,6 +250,7 @@ class SearchManager {
         this.highlightedIndex = (this.highlightedIndex + 1) % itemCount;
     }
 
+    /** Highlight the previous result item (wraps to last). */
     highlightPrevious() {
         if (this.resultsContainer.hidden) return;
 
@@ -205,10 +258,12 @@ class SearchManager {
         this.highlightedIndex = (this.highlightedIndex - 1 + itemCount) % itemCount;
     }
 
+    /** Hide the search results container. */
     hideResults() {
         this.resultsContainer.hidden = true;
     }
 
+    /** Clear the search input and hide results. */
     clear() {
         this.input.value = '';
         this.hideResults();
