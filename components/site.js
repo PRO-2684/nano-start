@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'nano-start-sites';
+const STORAGE_KEY = "nano-start-sites";
 
 /** Manages the list of sites, adding, editing, deleting, and rendering. */
 class SiteManager extends EventTarget {
@@ -12,7 +12,7 @@ class SiteManager extends EventTarget {
         /**
          * Stored list of sites.
          * @type {Array<{id: string, name: string, url: string, icon: string}>}
-        */
+         */
         this.sites = [];
         this.draggedElement = null;
         this.init();
@@ -32,7 +32,7 @@ class SiteManager extends EventTarget {
                 this.sites = JSON.parse(stored);
             }
         } catch (error) {
-            console.error('Error loading sites from localStorage:', error);
+            console.error("Error loading sites from localStorage:", error);
             this.sites = [];
         }
     }
@@ -42,9 +42,9 @@ class SiteManager extends EventTarget {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.sites));
         } catch (error) {
-            console.error('Error saving sites to localStorage:', error);
+            console.error("Error saving sites to localStorage:", error);
         }
-        this.dispatchEvent(new Event('sitesUpdated'));
+        this.dispatchEvent(new Event("sitesUpdated"));
     }
 
     /**
@@ -52,7 +52,7 @@ class SiteManager extends EventTarget {
      * @param {HTMLElement} card - The site card element.
      */
     selectSiteName(card) {
-        const siteName = card?.querySelector?.('.site-name');
+        const siteName = card?.querySelector?.(".site-name");
         if (!siteName) return;
         siteName.focus();
         siteName.select();
@@ -67,25 +67,25 @@ class SiteManager extends EventTarget {
      * @param {boolean} enable - Whether to enable editing mode.
      */
     setCardEditing(card, site, enable) {
-        card.classList.toggle('editing', enable);
+        card.classList.toggle("editing", enable);
 
-        const nameInput = card.querySelector('.site-name');
-        const urlInput = card.querySelector('.site-url');
+        const nameInput = card.querySelector(".site-name");
+        const urlInput = card.querySelector(".site-url");
 
         nameInput.readOnly = !enable;
         nameInput.value = site.name;
         urlInput.readOnly = !enable;
         urlInput.value = enable ? site.url : this.formatUrl(site.url);
-        urlInput.type = enable ? 'url' : 'text';
+        urlInput.type = enable ? "url" : "text";
 
         // Update edit button
-        const editBtn = card.querySelector('.edit-btn');
+        const editBtn = card.querySelector(".edit-btn");
         if (enable) {
-            editBtn.innerHTML = '✓';
-            editBtn.setAttribute('title', 'Save');
+            editBtn.innerHTML = "✓";
+            editBtn.setAttribute("title", "Save");
         } else {
-            editBtn.innerHTML = '✎';
-            editBtn.setAttribute('title', 'Edit');
+            editBtn.innerHTML = "✎";
+            editBtn.setAttribute("title", "Edit");
         }
     }
 
@@ -93,9 +93,9 @@ class SiteManager extends EventTarget {
     addNewSite() {
         const site = {
             id: Date.now().toString(),
-            name: 'New Site',
-            url: 'https://example.org/',
-            icon: '🌐'
+            name: "New Site",
+            url: "https://example.org/",
+            icon: "🌐",
         };
         this.sites.push(site);
         this.saveSites();
@@ -113,7 +113,7 @@ class SiteManager extends EventTarget {
      */
     startEditing(siteId) {
         const card = document.querySelector(`[data-id="${siteId}"]`);
-        const site = this.sites.find(s => s.id === siteId);
+        const site = this.sites.find((s) => s.id === siteId);
         if (!card || !site) return;
 
         this.setCardEditing(card, site, true);
@@ -128,24 +128,24 @@ class SiteManager extends EventTarget {
         const card = document.querySelector(`[data-id="${siteId}"]`);
         if (!card) return;
 
-        const nameInput = card.querySelector('.site-name');
-        const urlInput = card.querySelector('.site-url');
+        const nameInput = card.querySelector(".site-name");
+        const urlInput = card.querySelector(".site-url");
 
         const name = nameInput.value.trim();
         const url = urlInput.value.trim();
         if (!name || !url) {
-            alert('Please fill in both name and URL fields.');
+            alert("Please fill in both name and URL fields.");
             return;
         }
 
         // Validate URL
         if (!URL.canParse(url)) {
-            alert('Please enter a valid URL (e.g., https://example.com)');
+            alert("Please enter a valid URL (e.g., https://example.com)");
             return;
         }
 
         // Update site
-        const siteIndex = this.sites.findIndex(s => s.id === siteId);
+        const siteIndex = this.sites.findIndex((s) => s.id === siteId);
         if (siteIndex !== -1) {
             this.sites[siteIndex].name = name;
             this.sites[siteIndex].url = url;
@@ -164,7 +164,7 @@ class SiteManager extends EventTarget {
      * @param {HTMLElement} card - The site card element.
      */
     cancelEdit(card) {
-        const site = this.sites.find(s => s.id === card.dataset.id);
+        const site = this.sites.find((s) => s.id === card.dataset.id);
         if (site) {
             // Revert to non-editing state
             this.setCardEditing(card, site, false);
@@ -176,9 +176,9 @@ class SiteManager extends EventTarget {
      * @param {HTMLElement} card - The site card element.
      */
     clearDeleteConfirmation(card) {
-        const deleteBtn = card.querySelector('.delete-btn');
-        deleteBtn.classList.remove('delete-confirm');
-        deleteBtn.setAttribute('title', 'Delete');
+        const deleteBtn = card.querySelector(".delete-btn");
+        deleteBtn.classList.remove("delete-confirm");
+        deleteBtn.setAttribute("title", "Delete");
     }
 
     /**
@@ -191,14 +191,14 @@ class SiteManager extends EventTarget {
             card.remove();
         }
 
-        const index = this.sites.findIndex(site => site.id === id);
+        const index = this.sites.findIndex((site) => site.id === id);
         this.sites.splice(index, 1);
         this.saveSites();
     }
 
     /** Render all sites in the container. */
     renderSites() {
-        this.container.innerHTML = '';
+        this.container.innerHTML = "";
         this.sites.forEach((site) => {
             const card = this.createSiteCard(site);
             this.container.appendChild(card);
@@ -215,25 +215,25 @@ class SiteManager extends EventTarget {
      * @returns {HTMLAnchorElement} The created site card element.
      */
     createSiteCard(site) {
-        const card = document.createElement('a');
+        const card = document.createElement("a");
         card.href = site.url;
-        card.className = 'site-card';
+        card.className = "site-card";
         card.draggable = false;
-        card.rel = 'noopener noreferrer';
-        card.addEventListener('click', (e) => {
-            const isEditing = card.classList.contains('editing');
+        card.rel = "noopener noreferrer";
+        card.addEventListener("click", (e) => {
+            const isEditing = card.classList.contains("editing");
             if (isEditing) {
                 e.preventDefault();
             }
         });
-        card.addEventListener('keydown', (e) => {
-            const isEditing = card.classList.contains('editing');
+        card.addEventListener("keydown", (e) => {
+            const isEditing = card.classList.contains("editing");
             this.clearDeleteConfirmation(card);
             if (isEditing) {
-                if (e.key === 'Escape') {
+                if (e.key === "Escape") {
                     e.preventDefault();
                     this.cancelEdit(card);
-                } else if (e.key === 'Enter' && !e.shiftKey) {
+                } else if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     this.saveEdit(site.id);
                 }
@@ -242,29 +242,29 @@ class SiteManager extends EventTarget {
         card.dataset.id = site.id;
 
         // Drag handle
-        const dragHandle = document.createElement('div');
-        dragHandle.className = 'drag-handle';
-        dragHandle.innerHTML = '⋮⋮';
-        dragHandle.setAttribute('title', 'Drag to reorder');
+        const dragHandle = document.createElement("div");
+        dragHandle.className = "drag-handle";
+        dragHandle.innerHTML = "⋮⋮";
+        dragHandle.setAttribute("title", "Drag to reorder");
         dragHandle.draggable = true;
 
         // Only allow dragging from the handle
-        dragHandle.addEventListener('dragstart', (e) => {
+        dragHandle.addEventListener("dragstart", (e) => {
             this.handleDragStart(e);
         });
-        dragHandle.addEventListener('dragend', (e) => {
+        dragHandle.addEventListener("dragend", (e) => {
             this.handleDragEnd(e);
         });
-        dragHandle.addEventListener('click', (e) => {
+        dragHandle.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
         });
 
         // Icon element
-        const iconElement = document.createElement('div');
-        iconElement.className = 'site-icon';
+        const iconElement = document.createElement("div");
+        iconElement.className = "site-icon";
         if (URL.canParse(site.icon)) {
-            const img = document.createElement('img');
+            const img = document.createElement("img");
             img.src = site.icon;
             img.alt = site.name;
             iconElement.appendChild(img);
@@ -273,24 +273,26 @@ class SiteManager extends EventTarget {
         }
 
         // Click to edit icon in edit mode
-        iconElement.addEventListener('click', (e) => {
-            const isEditing = card.classList.contains('editing');
+        iconElement.addEventListener("click", (e) => {
+            const isEditing = card.classList.contains("editing");
             if (isEditing) {
                 e.preventDefault();
                 e.stopPropagation();
-                const newIcon = prompt('Enter emoji or image URL:', site.icon);
+                const newIcon = prompt("Enter emoji or image URL:", site.icon);
                 if (newIcon !== null) {
                     // Update site data
-                    const siteIndex = this.sites.findIndex(s => s.id === site.id);
+                    const siteIndex = this.sites.findIndex(
+                        (s) => s.id === site.id,
+                    );
                     if (siteIndex !== -1) {
                         this.sites[siteIndex].icon = newIcon.trim();
                         this.saveSites();
                     }
 
                     // Update icon display
-                    iconElement.innerHTML = '';
+                    iconElement.innerHTML = "";
                     if (URL.canParse(newIcon)) {
-                        const img = document.createElement('img');
+                        const img = document.createElement("img");
                         img.src = newIcon;
                         img.alt = site.name;
                         iconElement.appendChild(img);
@@ -301,37 +303,37 @@ class SiteManager extends EventTarget {
             }
         });
 
-        const nameInput = document.createElement('input');
-        nameInput.className = 'site-name';
-        nameInput.type = 'text';
+        const nameInput = document.createElement("input");
+        nameInput.className = "site-name";
+        nameInput.type = "text";
         nameInput.value = site.name;
         nameInput.readOnly = true;
 
-        const urlInput = document.createElement('input');
-        urlInput.className = 'site-url';
+        const urlInput = document.createElement("input");
+        urlInput.className = "site-url";
         urlInput.value = this.formatUrl(site.url);
         urlInput.readOnly = true;
-        urlInput.type = 'text';
+        urlInput.type = "text";
 
         // Site info container (name + url)
-        const siteInfo = document.createElement('div');
-        siteInfo.className = 'site-info';
+        const siteInfo = document.createElement("div");
+        siteInfo.className = "site-info";
         siteInfo.appendChild(nameInput);
         siteInfo.appendChild(urlInput);
 
         // Card actions container
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'card-actions';
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "card-actions";
 
         // Edit/Save button
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn';
-        editBtn.innerHTML = '✎';
-        editBtn.setAttribute('title', 'Edit');
-        editBtn.addEventListener('click', (e) => {
+        const editBtn = document.createElement("button");
+        editBtn.className = "edit-btn";
+        editBtn.innerHTML = "✎";
+        editBtn.setAttribute("title", "Edit");
+        editBtn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (card.classList.contains('editing')) {
+            if (card.classList.contains("editing")) {
                 this.saveEdit(site.id);
             } else {
                 this.startEditing(site.id);
@@ -339,20 +341,24 @@ class SiteManager extends EventTarget {
         });
 
         // Delete button
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.innerHTML = '🗑';
-        deleteBtn.setAttribute('title', 'Delete');
-        deleteBtn.addEventListener('click', (e) => {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-btn";
+        deleteBtn.innerHTML = "🗑";
+        deleteBtn.setAttribute("title", "Delete");
+        deleteBtn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            const deleteConfirm = deleteBtn.classList.contains('delete-confirm');
+            const deleteConfirm =
+                deleteBtn.classList.contains("delete-confirm");
             if (deleteConfirm) {
                 this.deleteSite(site.id);
             } else {
-                deleteBtn.classList.add('delete-confirm');
-                deleteBtn.setAttribute('title', 'Click again to confirm deletion');
+                deleteBtn.classList.add("delete-confirm");
+                deleteBtn.setAttribute(
+                    "title",
+                    "Click again to confirm deletion",
+                );
             }
         });
 
@@ -360,10 +366,10 @@ class SiteManager extends EventTarget {
         actionsDiv.appendChild(deleteBtn);
 
         // Drag and drop event listeners (on card, not handle)
-        card.addEventListener('dragover', (e) => this.handleDragOver(e));
-        card.addEventListener('drop', (e) => this.handleDrop(e));
-        card.addEventListener('dragenter', (e) => this.handleDragEnter(e));
-        card.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+        card.addEventListener("dragover", (e) => this.handleDragOver(e));
+        card.addEventListener("drop", (e) => this.handleDrop(e));
+        card.addEventListener("dragenter", (e) => this.handleDragEnter(e));
+        card.addEventListener("dragleave", (e) => this.handleDragLeave(e));
 
         card.appendChild(dragHandle);
         card.appendChild(actionsDiv);
@@ -393,12 +399,12 @@ class SiteManager extends EventTarget {
      */
     handleDragStart(e) {
         // Find the parent card element
-        const card = e.target.closest('.site-card');
+        const card = e.target.closest(".site-card");
         if (card) {
             this.draggedElement = card;
-            card.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', card.innerHTML);
+            card.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/html", card.innerHTML);
         }
     }
 
@@ -409,12 +415,12 @@ class SiteManager extends EventTarget {
     handleDragEnd(e) {
         // Remove dragging class from the dragged element
         if (this.draggedElement) {
-            this.draggedElement.classList.remove('dragging');
+            this.draggedElement.classList.remove("dragging");
             this.draggedElement = null;
         }
         // Remove drag-over class from all cards
-        document.querySelectorAll('.site-card').forEach(card => {
-            card.classList.remove('drag-over');
+        document.querySelectorAll(".site-card").forEach((card) => {
+            card.classList.remove("drag-over");
         });
     }
 
@@ -424,7 +430,7 @@ class SiteManager extends EventTarget {
      * @returns {boolean} False to allow drop.
      */
     handleDragOver(e) {
-        e.dataTransfer.dropEffect = 'move';
+        e.dataTransfer.dropEffect = "move";
         e.preventDefault();
         return false;
     }
@@ -435,7 +441,7 @@ class SiteManager extends EventTarget {
      */
     handleDragEnter(e) {
         if (e.currentTarget !== this.draggedElement) {
-            e.currentTarget.classList.add('drag-over');
+            e.currentTarget.classList.add("drag-over");
         }
     }
 
@@ -446,7 +452,7 @@ class SiteManager extends EventTarget {
     handleDragLeave(e) {
         // Only remove drag-over if we're actually leaving the card, not just entering a child
         if (!e.currentTarget.contains(e.relatedTarget)) {
-            e.currentTarget.classList.remove('drag-over');
+            e.currentTarget.classList.remove("drag-over");
         }
     }
 
@@ -462,20 +468,25 @@ class SiteManager extends EventTarget {
         const targetCard = e.currentTarget;
         const draggedCard = this.draggedElement;
         if (draggedCard && draggedCard !== targetCard) {
-            const draggedIndex = this.sites.findIndex(site => site.id === draggedCard.dataset.id);
-            const targetIndex = this.sites.findIndex(site => site.id === targetCard.dataset.id);
+            const draggedIndex = this.sites.findIndex(
+                (site) => site.id === draggedCard.dataset.id,
+            );
+            const targetIndex = this.sites.findIndex(
+                (site) => site.id === targetCard.dataset.id,
+            );
 
             // Insert dragged card before dropOnCard (pushing others to the right)
             targetCard.before(draggedCard);
 
             // Reorder the sites array to match DOM\
             const [movedSite] = this.sites.splice(draggedIndex, 1);
-            const newTargetIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+            const newTargetIndex =
+                draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
             this.sites.splice(newTargetIndex, 0, movedSite);
             this.saveSites();
         }
 
-        targetCard.classList.remove('drag-over');
+        targetCard.classList.remove("drag-over");
         return false;
     }
 
@@ -494,7 +505,7 @@ class SiteManager extends EventTarget {
                 this.sites.push(site);
                 importedCount++;
             } else {
-                console.warn('Skipping invalid site:', site);
+                console.warn("Skipping invalid site:", site);
             }
         }
 
@@ -514,16 +525,20 @@ class SiteManager extends EventTarget {
             return 0;
         }
 
-        const dataStr = JSON.stringify(this.sites.map(
-            site => ({name: site.name, url: site.url, icon: site.icon}) // remove id for export
-        ), null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
+        const dataStr = JSON.stringify(
+            this.sites.map(
+                (site) => ({ name: site.name, url: site.url, icon: site.icon }), // remove id for export
+            ),
+            null,
+            2,
+        );
+        const blob = new Blob([dataStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
 
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
-        a.download = `nano-start-sites-${new Date().toISOString().split('T')[0]}.json`;
-        a.style.display = 'none';
+        a.download = `nano-start-sites-${new Date().toISOString().split("T")[0]}.json`;
+        a.style.display = "none";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

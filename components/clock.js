@@ -11,11 +11,12 @@ function preciseClock() {
     let minutes = now.getMinutes();
     let seconds = now.getSeconds();
 
-    hours = hours < 10 ? '0' + hours : hours;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
 
-    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+    document.getElementById("clock").textContent =
+        `${hours}:${minutes}:${seconds}`;
 
     // Schedule the next update
     setTimeout(preciseClock, delay);

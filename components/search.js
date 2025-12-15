@@ -1,4 +1,4 @@
-import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.mjs';
+import Fuse from "https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.mjs";
 
 /**
  * @typedef {Object} SearchResult
@@ -21,13 +21,16 @@ class SearchManager {
         this.siteManager = siteManager;
         this.debounceTimer = null;
         this.fuse = new Fuse(this.siteManager.sites, {
-            keys: [{
-                name: 'name',
-                weight: 0.7,
-            }, {
-                name: 'url',
-                weight: 0.3,
-                }],
+            keys: [
+                {
+                    name: "name",
+                    weight: 0.7,
+                },
+                {
+                    name: "url",
+                    weight: 0.3,
+                },
+            ],
             useExtendedSearch: true, // https://www.fusejs.io/examples.html#extended-search
             threshold: 0.6,
             ignoreDiacritics: true,
@@ -42,7 +45,9 @@ class SearchManager {
      * @returns {number} The index of the highlighted item, or -1 if none.
      */
     get highlightedIndex() {
-        const index = this.resultsContainer.querySelector('.search-result-item.highlighted')?.dataset.index;
+        const index = this.resultsContainer.querySelector(
+            ".search-result-item.highlighted",
+        )?.dataset.index;
         return index !== undefined ? parseInt(index, 10) : -1;
     }
 
@@ -51,14 +56,16 @@ class SearchManager {
      * @param {number} value - The index to highlight.
      */
     set highlightedIndex(value) {
-        this.resultsContainer.children[this.highlightedIndex]?.classList.remove('highlighted');
-        this.resultsContainer.children[value]?.classList.add('highlighted');
+        this.resultsContainer.children[this.highlightedIndex]?.classList.remove(
+            "highlighted",
+        );
+        this.resultsContainer.children[value]?.classList.add("highlighted");
     }
 
     /** Setup all event listeners for search input, keyboard navigation, and site updates. */
     setupEventListeners() {
         // Input change with debounce
-        this.input.addEventListener('input', (e) => {
+        this.input.addEventListener("input", (e) => {
             clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
                 this.handleSearch(e.target.value);
@@ -66,28 +73,31 @@ class SearchManager {
         });
 
         // Keyboard navigation
-        this.input.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') {
+        this.input.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowDown") {
                 e.preventDefault();
                 this.highlightNext();
-            } else if (e.key === 'ArrowUp') {
+            } else if (e.key === "ArrowUp") {
                 e.preventDefault();
                 this.highlightPrevious();
-            } else if (e.key === 'Home') {
+            } else if (e.key === "Home") {
                 e.preventDefault();
                 this.highlightedIndex = 0;
-            } else if (e.key === 'End') {
+            } else if (e.key === "End") {
                 e.preventDefault();
-                this.highlightedIndex = this.resultsContainer.childElementCount - 1;
-            } else if (e.key === 'Enter') {
+                this.highlightedIndex =
+                    this.resultsContainer.childElementCount - 1;
+            } else if (e.key === "Enter") {
                 e.preventDefault();
-                this.resultsContainer.children[this.highlightedIndex]?.dispatchEvent(
+                this.resultsContainer.children[
+                    this.highlightedIndex
+                ]?.dispatchEvent(
                     // Delegate to highlighted item's click event, keeping modifiers
-                    new MouseEvent('click', e)
+                    new MouseEvent("click", e),
                 );
-            } else if (e.key === 'Escape') {
+            } else if (e.key === "Escape") {
                 e.preventDefault();
-                if (this.input.value.trim() === '') {
+                if (this.input.value.trim() === "") {
                     // Blur input if empty
                     this.input.blur();
                 } else {
@@ -98,22 +108,25 @@ class SearchManager {
         });
 
         // Click outside to close
-        document.addEventListener('click', (e) => {
-            if (!this.input.contains(e.target) && !this.resultsContainer.contains(e.target)) {
+        document.addEventListener("click", (e) => {
+            if (
+                !this.input.contains(e.target) &&
+                !this.resultsContainer.contains(e.target)
+            ) {
                 this.hideResults();
             }
         });
 
         // Enter to focus input
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && document.activeElement !== this.input) {
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && document.activeElement !== this.input) {
                 this.input.focus();
                 e.preventDefault();
             }
         });
 
         // Listen for site list updates to refresh Fuse index
-        this.siteManager.addEventListener('sitesUpdated', () => {
+        this.siteManager.addEventListener("sitesUpdated", () => {
             this.fuse.setCollection(this.siteManager.sites);
         });
     }
@@ -144,7 +157,7 @@ class SearchManager {
         const googleResult = {
             name: `Search Google for "${query}"`,
             url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-            icon: '🔍'
+            icon: "🔍",
         };
         return [...siteResults, googleResult];
     }
@@ -157,7 +170,7 @@ class SearchManager {
     filterSites(query) {
         this.fuse.setCollection(this.siteManager.sites);
         const fuseResults = this.fuse.search(query);
-        return fuseResults.map(result => result.item);
+        return fuseResults.map((result) => result.item);
     }
 
     /**
@@ -165,7 +178,7 @@ class SearchManager {
      * @param {SearchResult[]} results - Array of result objects to render.
      */
     renderResults(results) {
-        this.resultsContainer.innerHTML = '';
+        this.resultsContainer.innerHTML = "";
 
         results.forEach((result, index) => {
             const item = this.createResultItem(result, index);
@@ -183,18 +196,18 @@ class SearchManager {
      * @returns {HTMLAnchorElement} The created result item element.
      */
     createResultItem(data, index) {
-        const item = document.createElement('a');
-        item.className = 'search-result-item';
+        const item = document.createElement("a");
+        item.className = "search-result-item";
         item.href = data.url;
-        item.rel = 'noopener noreferrer';
+        item.rel = "noopener noreferrer";
         item.dataset.index = index;
 
         // Icon
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'result-icon';
+        const iconDiv = document.createElement("div");
+        iconDiv.className = "result-icon";
 
         if (URL.canParse(data.icon)) {
-            const img = document.createElement('img');
+            const img = document.createElement("img");
             img.src = data.icon;
             img.alt = data.name;
             iconDiv.appendChild(img);
@@ -203,15 +216,15 @@ class SearchManager {
         }
 
         // Info
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'result-info';
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "result-info";
 
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'result-name';
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "result-name";
         nameDiv.textContent = data.name;
 
-        const urlDiv = document.createElement('div');
-        urlDiv.className = 'result-url';
+        const urlDiv = document.createElement("div");
+        urlDiv.className = "result-url";
         urlDiv.textContent = this.formatUrl(data.url);
 
         infoDiv.appendChild(nameDiv);
@@ -221,7 +234,7 @@ class SearchManager {
         item.appendChild(infoDiv);
 
         // Click handler to clear search
-        item.addEventListener('click', () => {
+        item.addEventListener("click", () => {
             this.clear();
         });
 
@@ -255,7 +268,8 @@ class SearchManager {
         if (this.resultsContainer.hidden) return;
 
         const itemCount = this.resultsContainer.childElementCount;
-        this.highlightedIndex = (this.highlightedIndex - 1 + itemCount) % itemCount;
+        this.highlightedIndex =
+            (this.highlightedIndex - 1 + itemCount) % itemCount;
     }
 
     /** Hide the search results container. */
@@ -265,7 +279,7 @@ class SearchManager {
 
     /** Clear the search input and hide results. */
     clear() {
-        this.input.value = '';
+        this.input.value = "";
         this.hideResults();
     }
 }

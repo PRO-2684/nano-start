@@ -1,42 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
-    <title>Nano Start</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <link rel="manifest" href="manifest.json">
-</head>
-<body>
-    <header>
-        <div id="clock" class="clock">00:00:00</div>
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Search or enter URL..." autofocus>
-            <div id="search-results" class="search-results" hidden></div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#ffffff" />
+        <title>Nano Start</title>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="manifest.json" />
+    </head>
+    <body>
+        <header>
+            <div id="clock" class="clock">00:00:00</div>
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="search-input"
+                    class="search-input"
+                    placeholder="Search or enter URL..."
+                    autofocus
+                />
+                <div id="search-results" class="search-results" hidden></div>
+            </div>
+        </header>
+        <div id="sites-container" class="sites-container">
+            <!-- Sites will be dynamically added here -->
         </div>
-    </header>
-    <div id="sites-container" class="sites-container">
-        <!-- Sites will be dynamically added here -->
-    </div>
 
-    <!-- Fixed button group in bottom right corner -->
-    <div class="btn-group">
-        <button id="import-btn" class="action-btn" title="Import sites">
-            <span>📥</span>
-        </button>
-        <button id="export-btn" class="action-btn" title="Export sites">
-            <span>📤</span>
-        </button>
-        <button id="clear-cache-btn" class="action-btn" title="Clear icon cache">
-            <span>🗑️</span>
-        </button>
-        <button id="add-site-btn" class="primary-action-btn" title="Add website">+</button>
-    </div>
+        <!-- Fixed button group in bottom right corner -->
+        <div class="btn-group">
+            <button id="import-btn" class="action-btn" title="Import sites">
+                <span>📥</span>
+            </button>
+            <button id="export-btn" class="action-btn" title="Export sites">
+                <span>📤</span>
+            </button>
+            <button
+                id="clear-cache-btn"
+                class="action-btn"
+                title="Clear icon cache"
+            >
+                <span>🗑️</span>
+            </button>
+            <button
+                id="add-site-btn"
+                class="primary-action-btn"
+                title="Add website"
+            >
+                +
+            </button>
+        </div>
 
-    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        <input
+            type="file"
+            id="import-file-input"
+            accept=".json"
+            style="display: none"
+        />
 
-    <script type="module" src="app.js"></script>
-</body>
+        <script type="module" src="app.js"></script>
+    </body>
 </html>
