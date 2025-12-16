@@ -54,13 +54,9 @@ A minimal yet hackable browser start page.
 - To activate an item, you can click it, or press `Enter` if its highlighted
 - You can press `Esc` to clear the input and quit search
 
-### Other
+### Settings
 
-You can see more options when hovering over the add button **+**:
-
-- **🗑️**: Clears icon cache, useful if your pinned sites updated their favicons
-- **📤**: Exports pinned sites as a JSON file
-- **📥**: Imports pinned sites from a JSON file (appends to the list)
+When hovering over the add button **+**, a gear icon **⚙️** will appear. Click it to open the settings dialog. For more details, see [SETTINGS.md](./docs/SETTINGS.md).
 
 ### Advanced Customization
 
