@@ -41,71 +41,58 @@
             </button>
         </div>
 
-        <!-- Settings Modal -->
-        <div id="settings-modal" class="modal" hidden>
-            <div class="modal-overlay"></div>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>⚙️ Settings</h2>
-                    <button
-                        id="close-settings-btn"
-                        class="close-btn"
-                        title="Close"
-                    >
-                        ✕
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Search Engines Section -->
-                    <section class="settings-section">
-                        <h3>🔍 Search Engine</h3>
-                        <div
-                            id="search-engines-list"
-                            class="search-engines-list"
-                        >
-                            <!-- Search engines will be rendered here -->
-                        </div>
-                        <button
-                            id="add-search-engine-btn"
-                            class="secondary-btn"
-                        >
-                            ➕ Add Custom Search Engine
-                        </button>
-                    </section>
-
-                    <!-- Backup Section -->
-                    <section class="settings-section">
-                        <h3>💾 Backup</h3>
-                        <div class="settings-actions">
-                            <button id="import-btn" class="secondary-btn">
-                                📥 Import Sites
-                            </button>
-                            <button id="export-btn" class="secondary-btn">
-                                📤 Export Sites
-                            </button>
-                        </div>
-                        <p class="settings-help">
-                            Export your sites as a JSON file for backup or
-                            transfer to another device.
-                        </p>
-                    </section>
-
-                    <!-- Advanced Section -->
-                    <section class="settings-section">
-                        <h3>🔧 Advanced</h3>
-                        <div class="settings-actions">
-                            <button id="clear-cache-btn" class="secondary-btn">
-                                🗑️ Clear Icon Cache
-                            </button>
-                        </div>
-                        <p class="settings-help">
-                            Clear cached icons if your pinned sites have updated
-                            their favicons.
-                        </p>
-                    </section>
-                </div>
+        <!-- Settings Dialog -->
+        <dialog id="settings-dialog">
+            <div class="dialog-header">
+                <h2>⚙️ Settings</h2>
+                <button id="close-settings-btn" class="close-btn" title="Close">
+                    ✕
+                </button>
             </div>
-        </div>
+            <div class="dialog-body">
+                <!-- Search Engines Section -->
+                <section class="settings-section">
+                    <h3>🔍 Search Engine</h3>
+                    <div id="search-engines-list" class="search-engines-list">
+                        <!-- Search engines will be rendered here -->
+                    </div>
+                    <button id="add-search-engine-btn" class="secondary-btn">
+                        ➕ Add Custom Search Engine
+                    </button>
+                </section>
+
+                <!-- Backup Section -->
+                <section class="settings-section">
+                    <h3>💾 Backup</h3>
+                    <div class="settings-actions">
+                        <button id="import-btn" class="secondary-btn">
+                            📥 Import Sites
+                        </button>
+                        <button id="export-btn" class="secondary-btn">
+                            📤 Export Sites
+                        </button>
+                    </div>
+                    <p class="settings-help">
+                        Export your sites as a JSON file for backup or transfer
+                        to another device.
+                    </p>
+                </section>
+
+                <!-- Advanced Section -->
+                <section class="settings-section">
+                    <h3>🔧 Advanced</h3>
+                    <div class="settings-actions">
+                        <button id="clear-cache-btn" class="secondary-btn">
+                            🗑️ Clear Icon Cache
+                        </button>
+                    </div>
+                    <p class="settings-help">
+                        Clear cached icons if your pinned sites have updated
+                        their favicons.
+                    </p>
+                </section>
+            </div>
+        </dialog>
 
         <input
             type="file"

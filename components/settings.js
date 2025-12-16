@@ -50,7 +50,7 @@ class SettingsManager extends EventTarget {
     constructor(siteManager) {
         super();
         this.siteManager = siteManager;
-        this.modal = document.getElementById("settings-modal");
+        this.dialog = document.getElementById("settings-dialog");
         this.searchEnginesList = document.getElementById("search-engines-list");
 
         /** @type {{searchEngines: Array<{id: string, name: string, url: string, icon: string, builtin?: boolean}>, defaultSearchEngine: string}} */
@@ -76,13 +76,18 @@ class SettingsManager extends EventTarget {
             if (stored) {
                 const parsed = JSON.parse(stored);
                 // Merge with defaults to ensure all built-in engines are present
-                const builtinIds = new Set(DEFAULT_SEARCH_ENGINES.map(e => e.id));
+                const builtinIds = new Set(
+                    DEFAULT_SEARCH_ENGINES.map((e) => e.id),
+                );
                 const customEngines = (parsed.searchEngines || []).filter(
-                    e => !e.builtin
+                    (e) => !e.builtin,
                 );
 
                 this.settings = {
-                    searchEngines: [...DEFAULT_SEARCH_ENGINES, ...customEngines],
+                    searchEngines: [
+                        ...DEFAULT_SEARCH_ENGINES,
+                        ...customEngines,
+                    ],
                     defaultSearchEngine: parsed.defaultSearchEngine || "google",
                 };
             }
@@ -96,7 +101,7 @@ class SettingsManager extends EventTarget {
         try {
             localStorage.setItem(
                 SETTINGS_STORAGE_KEY,
-                JSON.stringify(this.settings)
+                JSON.stringify(this.settings),
             );
             this.dispatchEvent(new Event("settingsUpdated"));
         } catch (error) {
@@ -111,7 +116,7 @@ class SettingsManager extends EventTarget {
     getDefaultSearchEngine() {
         return (
             this.settings.searchEngines.find(
-                (e) => e.id === this.settings.defaultSearchEngine
+                (e) => e.id === this.settings.defaultSearchEngine,
             ) || this.settings.searchEngines[0]
         );
     }
@@ -128,28 +133,19 @@ class SettingsManager extends EventTarget {
 
     /** Setup all event listeners for the settings modal. */
     setupEventListeners() {
-        // Open modal
+        // Open dialog
         const settingsBtn = document.getElementById("settings-btn");
-        settingsBtn?.addEventListener("click", () => this.openModal());
+        settingsBtn?.addEventListener("click", () => this.openDialog());
 
-        // Close modal
+        // Close dialog
         const closeBtn = document.getElementById("close-settings-btn");
-        closeBtn?.addEventListener("click", () => this.closeModal());
-
-        // Close on overlay click
-        const overlay = this.modal?.querySelector(".modal-overlay");
-        overlay?.addEventListener("click", () => this.closeModal());
-
-        // Close on Escape key
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && !this.modal.hidden) {
-                this.closeModal();
-            }
-        });
+        closeBtn?.addEventListener("click", () => this.closeDialog());
 
         // Add custom search engine
         const addEngineBtn = document.getElementById("add-search-engine-btn");
-        addEngineBtn?.addEventListener("click", () => this.addCustomSearchEngine());
+        addEngineBtn?.addEventListener("click", () =>
+            this.addCustomSearchEngine(),
+        );
 
         // Import/Export/Clear Cache - these are now in the modal
         this.setupBackupButtons();
@@ -179,7 +175,9 @@ class SettingsManager extends EventTarget {
                 const importedCount = this.siteManager.importSites(json);
                 e.target.value = ""; // Reset input
                 if (importedCount > 0) {
-                    console.info(`Successfully imported ${importedCount} site(s).`);
+                    console.info(
+                        `Successfully imported ${importedCount} site(s).`,
+                    );
                 } else {
                     alert("No valid sites found in the file.");
                 }
@@ -195,7 +193,9 @@ class SettingsManager extends EventTarget {
             try {
                 const exportedCount = this.siteManager.exportSites();
                 if (exportedCount > 0) {
-                    console.info(`Successfully exported ${exportedCount} site(s).`);
+                    console.info(
+                        `Successfully exported ${exportedCount} site(s).`,
+                    );
                 } else {
                     console.info("No sites to export.");
                 }
@@ -212,7 +212,7 @@ class SettingsManager extends EventTarget {
         clearCacheBtn?.addEventListener("click", async () => {
             if (
                 !confirm(
-                    "Clear all cached icons? They will be re-downloaded when needed."
+                    "Clear all cached icons? They will be re-downloaded when needed.",
                 )
             ) {
                 return;
@@ -230,18 +230,21 @@ class SettingsManager extends EventTarget {
                         if (event.data.type === "ICON_CACHE_CLEARED") {
                             navigator.serviceWorker.removeEventListener(
                                 "message",
-                                handler
+                                handler,
                             );
                             resolve(event.data);
                         }
                     };
-                    navigator.serviceWorker.addEventListener("message", handler);
+                    navigator.serviceWorker.addEventListener(
+                        "message",
+                        handler,
+                    );
 
                     // Timeout after 5 seconds
                     setTimeout(() => {
                         navigator.serviceWorker.removeEventListener(
                             "message",
-                            handler
+                            handler,
                         );
                         resolve({ success: false });
                     }, 5000);
@@ -251,7 +254,7 @@ class SettingsManager extends EventTarget {
                     console.info("Icon cache cleared successfully.");
                 } else {
                     console.info(
-                        "Cache cleared, but confirmation was not received."
+                        "Cache cleared, but confirmation was not received.",
                     );
                 }
             } catch (error) {
@@ -261,16 +264,14 @@ class SettingsManager extends EventTarget {
         });
     }
 
-    /** Open the settings modal. */
-    openModal() {
-        this.modal.hidden = false;
-        // Focus the modal for keyboard navigation
-        this.modal.querySelector(".modal-content")?.focus();
+    /** Open the settings dialog. */
+    openDialog() {
+        this.dialog.showModal();
     }
 
-    /** Close the settings modal. */
-    closeModal() {
-        this.modal.hidden = true;
+    /** Close the settings dialog. */
+    closeDialog() {
+        this.dialog.close();
     }
 
     /** Render the search engines list. */
@@ -345,13 +346,13 @@ class SettingsManager extends EventTarget {
         if (!name) return;
 
         const url = prompt(
-            'Search URL (use {query} as placeholder):\nExample: https://example.com/search?q={query}',
-            "https://example.com/search?q={query}"
+            "Search URL (use {query} as placeholder):\nExample: https://example.com/search?q={query}",
+            "https://example.com/search?q={query}",
         );
         if (!url) return;
 
         if (!url.includes("{query}")) {
-            alert('Search URL must contain {query} placeholder.');
+            alert("Search URL must contain {query} placeholder.");
             return;
         }
 
@@ -379,7 +380,7 @@ class SettingsManager extends EventTarget {
         if (!confirm("Delete this search engine?")) return;
 
         const index = this.settings.searchEngines.findIndex(
-            (e) => e.id === engineId
+            (e) => e.id === engineId,
         );
         if (index === -1) return;
 

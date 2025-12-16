@@ -510,59 +510,63 @@ header {
     }
 }
 
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition-duration: 0.2s;
-    transition-property: opacity, display;
-    transition-behavior: allow-discrete;
-    opacity: 1;
-
-    &[hidden] {
-        display: none;
-        opacity: 0;
-    }
-}
-
-@starting-style {
-    .modal {
-        opacity: 0;
-    }
-}
-
-.modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    position: relative;
+/* Dialog Styles */
+dialog {
+    margin: auto;
     background-color: var(--bg-color);
+    color: var(--text-color);
     border: 1px solid var(--card-border);
     border-radius: 12px;
     max-width: 600px;
     width: 90%;
     max-height: 80vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    padding: 0;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transition:
+        opacity 0.3s ease-out,
+        transform 0.3s ease-out,
+        overlay 0.3s ease-out allow-discrete,
+        display 0.3s ease-out allow-discrete;
+    opacity: 1;
+    transform: scale(1);
+
+    &:not([open]) {
+        opacity: 0;
+        transform: scale(0.95);
+    }
 }
 
-.modal-header {
+@starting-style {
+    dialog[open] {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Dialog backdrop */
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(0px);
+    transition:
+        background-color 0.3s ease-out,
+        backdrop-filter 0.3s ease-out,
+        overlay 0.3s ease-out allow-discrete,
+        display 0.3s ease-out allow-discrete;
+}
+
+dialog[open]::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+@starting-style {
+    dialog[open]::backdrop {
+        background-color: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+}
+
+.dialog-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -597,7 +601,7 @@ header {
     }
 }
 
-.modal-body {
+.dialog-body {
     padding: 1.5em;
     overflow-y: auto;
     flex: 1;
@@ -732,13 +736,13 @@ header {
 }
 
 @media (max-width: 768px) {
-    .modal-content {
+    dialog {
         width: 95%;
         max-height: 90vh;
     }
 
-    .modal-header,
-    .modal-body {
+    .dialog-header,
+    .dialog-body {
         padding: 1em;
     }
 
