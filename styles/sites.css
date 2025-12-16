@@ -1,0 +1,204 @@
+/* Site Cards and Container */
+.sites-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5em;
+
+    &:empty::before {
+        content: "No sites yet. Click the + button to add your first site!";
+        opacity: 0.6;
+    }
+}
+
+.site-card {
+    position: relative;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1em;
+    cursor: pointer;
+    transition-property: background-color, transform, border-left-color;
+    transition-duration: 0.4s;
+    transition-timing-function: cubic-bezier(0, 0.73, 0.48, 1);
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75em;
+    max-width: 16em;
+    border-left: 2px solid transparent;
+
+    &:hover {
+        /* Only transform when not editing */
+        &:not(.editing) {
+            background-color: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        .card-actions,
+        .drag-handle {
+            opacity: 0.8;
+        }
+    }
+
+    &.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+
+    &.drag-over {
+        border-left-color: var(--text-color);
+    }
+
+    &.editing {
+        cursor: default;
+
+        .site-name,
+        .site-url {
+            border-bottom: 1px solid var(--input-border);
+            cursor: text;
+
+            &:focus {
+                border-color: var(--text-color);
+            }
+        }
+
+        .site-icon {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+
+            &:hover {
+                opacity: 0.7;
+            }
+        }
+    }
+
+    .site-icon {
+        width: 2.5em;
+        height: 2.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    .site-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25em;
+        min-width: 0;
+    }
+
+    .site-name,
+    .site-url {
+        outline: none;
+        transition: border-color 0.2s ease;
+        border: none;
+        border-bottom: 1px solid transparent;
+        background-color: transparent;
+        color: inherit;
+        cursor: inherit;
+        text-align: left;
+        text-overflow: ellipsis;
+    }
+
+    .site-name {
+        font-size: 1.1em;
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+    .site-url {
+        font-size: 0.85em;
+        opacity: 0.7;
+        word-break: break-all;
+    }
+
+    .card-actions {
+        position: absolute;
+        top: 0.5em;
+        right: 0.5em;
+        display: flex;
+        gap: 0.25em;
+        opacity: 0;
+        transition: all 0.2s ease;
+    }
+
+    .drag-handle {
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+        width: 28px;
+        height: 28px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: grab;
+        font-size: 1em;
+        line-height: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+
+        &:hover {
+            background-color: var(--card-hover);
+            border-color: var(--text-color);
+        }
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
+    .edit-btn,
+    .delete-btn {
+        width: 28px;
+        height: 28px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--card-border);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+        line-height: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            background-color: var(--card-hover);
+            border-color: var(--text-color);
+        }
+    }
+
+    .delete-btn.delete-confirm {
+        background-color: #ff4444;
+        color: white;
+        border-color: #cc0000;
+
+        &:hover {
+            background-color: #cc0000;
+        }
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3em;
+    opacity: 0.6;
+}

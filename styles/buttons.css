@@ -1,0 +1,80 @@
+/* Button Group and Action Buttons */
+.btn-group {
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75em;
+    z-index: 100;
+
+    &:hover .action-btn {
+        opacity: 1;
+        translate: 0 0;
+        pointer-events: auto;
+    }
+}
+
+.action-btn {
+    width: 2em;
+    height: 2em;
+    font-size: 1.5em;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    cursor: pointer;
+    transition-property:
+        background-color, border-color, translate, scale, opacity;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+    translate: 0 1em;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: var(--card-hover);
+        border-color: var(--text-color);
+        translate: 0 0;
+        scale: 1.1;
+    }
+
+    &:nth-child(1) {
+        transition-delay: 0.01s;
+    }
+
+    span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.primary-action-btn {
+    width: 2em;
+    height: 2em;
+    font-size: 2em;
+    background-color: var(--accent-color);
+    color: var(--btn-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition-property: background-color, scale;
+    transition-duration: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: color-mix(
+            in oklch,
+            var(--accent-color) 85%,
+            var(--btn-bg)
+        );
+        scale: 1.1;
+    }
+}

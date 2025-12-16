@@ -14,6 +14,15 @@ const APP_RESOURCE = [
     "/components/site.js",
     "/manifest.json",
     "/style.css",
+    "/styles/variables.css",
+    "/styles/base.css",
+    "/styles/header.css",
+    "/styles/search.css",
+    "/styles/buttons.css",
+    "/styles/sites.css",
+    "/styles/dialog.css",
+    "/styles/settings.css",
+    "/styles/responsive.css",
     "https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.mjs",
 ];
 
