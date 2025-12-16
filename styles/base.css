@@ -27,3 +27,13 @@ button {
     font-family: inherit;
     font-size: inherit;
 }
+
+@media (max-width: 768px) {
+    body {
+        padding: 1em;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+}
