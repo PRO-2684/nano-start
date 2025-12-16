@@ -1,8 +1,8 @@
 "use strict";
 import { SiteManager } from "./components/site.js";
 import { SearchManager } from "./components/search.js";
+import { SettingsManager } from "./components/settings.js";
 import { preciseClock } from "./components/clock.js";
-import { setupButtonListeners } from "./components/buttons.js";
 
 function initApp() {
     registerServiceWorker();
@@ -11,16 +11,22 @@ function initApp() {
     // Initialize site manager
     const siteManager = new SiteManager(container);
 
+    // Initialize settings manager
+    const settingsManager = new SettingsManager(siteManager);
+
     // Initialize search
     const searchInput = document.getElementById("search-input");
     const searchResults = document.getElementById("search-results");
-    new SearchManager(searchInput, searchResults, siteManager);
+    new SearchManager(searchInput, searchResults, siteManager, settingsManager);
 
     // Initialize clock
     preciseClock();
 
-    // Setup button listeners
-    setupButtonListeners(siteManager);
+    // Setup add site button
+    const addBtn = document.getElementById("add-site-btn");
+    addBtn.addEventListener("click", () => {
+        siteManager.addNewSite();
+    });
 }
 
 function registerServiceWorker() {

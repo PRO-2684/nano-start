@@ -14,11 +14,13 @@ class SearchManager {
      * @param {HTMLInputElement} inputElement - The search input element.
      * @param {HTMLElement} resultsElement - The container for search results.
      * @param {import('./site.js').SiteManager} siteManager - The site manager instance.
+     * @param {import('./settings.js').SettingsManager} settingsManager - The settings manager instance.
      */
-    constructor(inputElement, resultsElement, siteManager) {
+    constructor(inputElement, resultsElement, siteManager, settingsManager) {
         this.input = inputElement;
         this.resultsContainer = resultsElement;
         this.siteManager = siteManager;
+        this.settingsManager = settingsManager;
         this.debounceTimer = null;
         this.fuse = new Fuse(this.siteManager.sites, {
             keys: [
@@ -148,18 +150,19 @@ class SearchManager {
     }
 
     /**
-     * Get search results including filtered sites and Google search option.
+     * Get search results including filtered sites and configured search engine option.
      * @param {string} query - The search query.
      * @returns {SearchResult[]} Array of result objects with name, url, and icon properties.
      */
     getResults(query) {
         const siteResults = this.filterSites(query);
-        const googleResult = {
-            name: `Search Google for "${query}"`,
-            url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-            icon: "🔍",
+        const searchEngine = this.settingsManager.getDefaultSearchEngine();
+        const searchResult = {
+            name: `Search ${searchEngine.name} for "${query}"`,
+            url: this.settingsManager.getSearchUrl(query),
+            icon: searchEngine.icon,
         };
-        return [...siteResults, googleResult];
+        return [...siteResults, searchResult];
     }
 
     /**
