@@ -7,7 +7,7 @@ A minimal yet hackable browser start page.
 - 🚀 **Vanilla JavaScript**: Pure JavaScript, HTML & CSS without bundlers or frameworks
 - 📌 **Pin & Reorder**: Add your favorite websites and reorder them with drag & drop
 - 💾 **localStorage**: All preferences are saved locally in your browser
-- 🎨 **Adaptive Theme**: Automatic light and dark theme using CSS `prefers-color-scheme`
+- 🎨 **Adaptive Theme**: Automatic light and dark theme using cutting-edge CSS features
 - 📱 **Offline First**: Service worker enables offline-first access
 - ⚡ **Fast & Lightweight**: No dependencies, minimal footprint
 
