@@ -43,19 +43,6 @@ class SiteManager extends CardManager {
         this.items = value;
     }
 
-    // Alias methods for backward compatibility
-    loadSites() {
-        this.loadItems();
-    }
-
-    saveSites() {
-        this.saveItems();
-    }
-
-    renderSites() {
-        this.renderItems();
-    }
-
     /**
      * Override createCardElement to make site cards clickable links.
      * @param {Object} item - The site data.
@@ -104,8 +91,8 @@ class SiteManager extends CardManager {
         });
 
         if (importedCount > 0) {
-            this.saveSites();
-            this.renderSites();
+            this.saveItems();
+            this.renderItems();
         }
 
         return importedCount;
