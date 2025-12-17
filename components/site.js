@@ -5,11 +5,6 @@ const STORAGE_KEY = "nano-start-sites";
 
 /** Manages the list of sites, adding, editing, deleting, and rendering. */
 class SiteManager extends CardManager {
-    static DEFAULT_ITEM = {
-        name: "New Site",
-        url: "https://example.org/",
-        icon: "🌐",
-    };
     /**
      * Create a new SiteManager instance.
      * @param {HTMLElement} container - The container element for site cards.
@@ -17,6 +12,26 @@ class SiteManager extends CardManager {
     constructor(container) {
         super(container, STORAGE_KEY);
         this.init();
+    }
+
+    /**
+     * Get placeholder item template for new sites.
+     * @returns {Object} Template object for new site.
+     */
+    getPlaceholderItem() {
+        return {
+            name: "New Site",
+            url: "https://example.org/",
+            icon: "🌐",
+        };
+    }
+
+    /**
+     * Get default items for first load.
+     * @returns {Array} Empty array (no default sites).
+     */
+    getDefaultItems() {
+        return [];
     }
 
     // Alias for compatibility

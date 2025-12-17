@@ -28,17 +28,31 @@ class CardManager extends EventTarget {
         this.renderItems();
     }
 
-    /** Load items from localStorage. */
+    /**
+     * Load items from localStorage.
+     * On first load (no stored data), uses getDefaultItems().
+     */
     loadItems() {
         try {
             const stored = localStorage.getItem(this.storageKey);
             if (stored) {
                 this.items = JSON.parse(stored);
+            } else {
+                this.items = this.getDefaultItems();
             }
         } catch (error) {
             console.error("Error loading items from localStorage:", error);
-            this.items = [];
+            this.items = this.getDefaultItems();
         }
+    }
+
+    /**
+     * Get default items for first load.
+     * Override in subclasses to provide default items.
+     * @returns {Array} Array of default items.
+     */
+    getDefaultItems() {
+        return [];
     }
 
     /** Save items to localStorage and dispatch update event. */
@@ -94,17 +108,22 @@ class CardManager extends EventTarget {
     }
 
     /**
+     * Get placeholder item template for new items.
+     * Override in subclasses to provide item template.
+     * @returns {Object} Template object (without id).
+     */
+    getPlaceholderItem() {
+        throw new Error("Subclass must implement getPlaceholderItem()");
+    }
+
+    /**
      * Add a new item with default values and start editing.
-     * Subclasses should define a DEFAULT_ITEM property with the template.
+     * Uses getPlaceholderItem() to get the template.
      */
     addNewItem() {
-        if (!this.constructor.DEFAULT_ITEM) {
-            throw new Error("Subclass must define DEFAULT_ITEM property");
-        }
-
         const item = {
             id: Date.now().toString(),
-            ...this.constructor.DEFAULT_ITEM,
+            ...this.getPlaceholderItem(),
         };
 
         this.items.push(item);
@@ -232,7 +251,7 @@ class CardManager extends EventTarget {
      */
     createCard(item) {
         const card = this.createCardElement(item);
-        card.className = "site-card";
+        card.className = "card-item";
         card.dataset.id = item.id;
 
         // Event listeners
@@ -465,7 +484,7 @@ class CardManager extends EventTarget {
      */
     handleDragStart(e) {
         const dragHandle = e.target;
-        const card = dragHandle.closest(".site-card");
+        const card = dragHandle.closest(".card-item");
         if (!card) return;
 
         card.classList.add("dragging");
@@ -479,7 +498,7 @@ class CardManager extends EventTarget {
      * @param {DragEvent} e - The drag event.
      */
     handleDragEnd(e) {
-        const cards = this.container.querySelectorAll(".site-card");
+        const cards = this.container.querySelectorAll(".card-item");
         cards.forEach((card) => {
             card.classList.remove("dragging", "drag-over");
         });

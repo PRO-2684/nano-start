@@ -27,18 +27,32 @@ const DEFAULT_SEARCH_ENGINES = [
 
 /** Manages search engines with card-based UI. */
 class SearchEngineManager extends CardManager {
-    static DEFAULT_ITEM = {
-        name: "New Search Engine",
-        url: "https://example.com/search?q={query}",
-        icon: "🔎",
-    };
-
     /**
      * Create a new SearchEngineManager instance.
      * @param {HTMLElement} container - The container element for engine cards.
      */
     constructor(container) {
         super(container, ENGINE_STORAGE_KEY);
+    }
+
+    /**
+     * Get placeholder item template for new search engines.
+     * @returns {Object} Template object for new engine.
+     */
+    getPlaceholderItem() {
+        return {
+            name: "New Search Engine",
+            url: "https://example.com/search?q={query}",
+            icon: "🔎",
+        };
+    }
+
+    /**
+     * Get default items for first load.
+     * @returns {Array} Array of default search engines.
+     */
+    getDefaultItems() {
+        return [...DEFAULT_SEARCH_ENGINES];
     }
 
     // Alias for compatibility
@@ -48,22 +62,6 @@ class SearchEngineManager extends CardManager {
 
     set engines(value) {
         this.items = value;
-    }
-
-    /** Load engines from localStorage, use defaults on first load. */
-    loadItems() {
-        try {
-            const stored = localStorage.getItem(this.storageKey);
-            if (stored) {
-                this.items = JSON.parse(stored);
-            } else {
-                // First time - use defaults
-                this.items = [...DEFAULT_SEARCH_ENGINES];
-            }
-        } catch (error) {
-            console.error("Error loading engines from localStorage:", error);
-            this.items = [...DEFAULT_SEARCH_ENGINES];
-        }
     }
 
     /**
