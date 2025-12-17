@@ -12,6 +12,7 @@
     }
 }
 
+/* Site Card */
 .site-card {
     position: relative;
     background-color: var(--card-bg);

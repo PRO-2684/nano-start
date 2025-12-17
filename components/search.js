@@ -150,19 +150,15 @@ class SearchManager {
     }
 
     /**
-     * Get search results including filtered sites and configured search engine option.
+     * Get search results including filtered sites and configured search engines.
      * @param {string} query - The search query.
      * @returns {SearchResult[]} Array of result objects with name, url, and icon properties.
      */
     getResults(query) {
         const siteResults = this.filterSites(query);
-        const searchEngine = this.settingsManager.getDefaultSearchEngine();
-        const searchResult = {
-            name: `Search ${searchEngine.name} for "${query}"`,
-            url: this.settingsManager.getSearchUrl(query),
-            icon: searchEngine.icon,
-        };
-        return [...siteResults, searchResult];
+        const engineResults =
+            this.settingsManager.getEngineSearchResults(query);
+        return [...siteResults, ...engineResults];
     }
 
     /**

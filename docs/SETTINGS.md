@@ -36,7 +36,7 @@ Configure your preferred default search engine for the search bar.
 4. Enter an icon (emoji or text character)
 5. The custom engine will appear in the list
 6. Select the radio button to make it your default
-7. Custom engines can be deleted by clicking the 🗑️ button
+7. Custom engines can be deleted by clicking the 🗑 button
 
 **How it works:**
 - When you type in the search bar, the last result will use your configured search engine
