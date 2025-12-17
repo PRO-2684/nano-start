@@ -9,19 +9,19 @@ const DEFAULT_SEARCH_ENGINES = [
         id: "google",
         name: "Google",
         url: "https://www.google.com/search?q={query}",
-        icon: "🔍",
+        icon: "https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp",
     },
     {
         id: "bing",
         name: "Bing",
         url: "https://www.bing.com/search?q={query}",
-        icon: "🔵",
+        icon: "https://www.bing.com/favicon.ico",
     },
     {
         id: "duckduckgo",
         name: "DuckDuckGo",
         url: "https://duckduckgo.com/?q={query}",
-        icon: "🦆",
+        icon: "https://duckduckgo.com/favicon.ico",
     },
 ];
 
