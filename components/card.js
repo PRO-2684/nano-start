@@ -20,6 +20,11 @@ class CardManager extends EventTarget {
          */
         this.items = [];
         this.draggedElement = null;
+        /**
+         * Map to track delete confirmation timeouts by card element.
+         * @type {Map<HTMLElement, number>}
+         */
+        this.deleteTimeouts = new Map();
     }
 
     /** Initialize the manager: load items, render cards. */
@@ -169,7 +174,7 @@ class CardManager extends EventTarget {
 
         // Validate URL if needed (can be overridden by subclass)
         if (!this.validateUrl(url)) {
-            alert("Please enter a valid URL.");
+            // Subclass validateUrl should handle error messages
             return;
         }
 
@@ -223,6 +228,12 @@ class CardManager extends EventTarget {
             deleteBtn.classList.remove("delete-confirm");
             deleteBtn.innerHTML = "🗑";
             deleteBtn.setAttribute("title", "Delete");
+        }
+
+        // Clear timeout if exists
+        if (this.deleteTimeouts.has(card)) {
+            clearTimeout(this.deleteTimeouts.get(card));
+            this.deleteTimeouts.delete(card);
         }
     }
 
@@ -471,6 +482,12 @@ class CardManager extends EventTarget {
             } else {
                 deleteBtn.classList.add("delete-confirm");
                 deleteBtn.setAttribute("title", "Click again to confirm");
+
+                // Set timeout to auto-cancel delete confirmation after 3 seconds
+                const timeoutId = setTimeout(() => {
+                    this.clearDeleteConfirmation(card);
+                }, 3000);
+                this.deleteTimeouts.set(card, timeoutId);
             }
         });
 
@@ -585,6 +602,51 @@ class CardManager extends EventTarget {
 
         this.saveItems();
         targetCard.classList.remove("drag-over");
+    }
+
+    /**
+     * Export items to a plain object (without IDs).
+     * @returns {Array} Array of items without IDs.
+     */
+    exportToObject() {
+        return this.items.map(({ name, url, icon }) => ({ name, url, icon }));
+    }
+
+    /**
+     * Import items from array, appending to existing items.
+     * @param {Array} itemsData - Array of item objects to import.
+     * @returns {number} The number of items successfully imported.
+     */
+    importFromArray(itemsData) {
+        let importedCount = 0;
+        let id = Date.now();
+
+        itemsData.forEach((itemData) => {
+            if (!itemData.name || !itemData.url) {
+                return; // Skip invalid entries
+            }
+
+            // Check for duplicates by URL
+            const exists = this.items.some((s) => s.url === itemData.url);
+            if (exists) {
+                return; // Skip duplicates
+            }
+
+            this.items.push({
+                id: (id++).toString(),
+                name: itemData.name,
+                url: itemData.url,
+                icon: itemData.icon || "🌐",
+            });
+            importedCount++;
+        });
+
+        if (importedCount > 0) {
+            this.saveItems();
+            this.renderItems();
+        }
+
+        return importedCount;
     }
 }
 

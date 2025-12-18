@@ -48,68 +48,16 @@ class SiteManager extends CardManager {
     }
 
     /**
-     * Import sites from JSON array.
-     * @param {Array<{name: string, url: string, icon: string}>} sites - Array of site objects to import.
-     * @returns {number} The number of sites imported.
+     * Override URL validation to provide specific error message.
+     * @param {string} url - The URL to validate.
+     * @returns {boolean} Whether the URL is valid.
      */
-    importSites(sites) {
-        let importedCount = 0;
-        let id = Date.now();
-
-        sites.forEach((site) => {
-            if (!site.name || !site.url) {
-                return; // Skip invalid entries
-            }
-
-            // Check for duplicates by URL
-            const exists = this.items.some((s) => s.url === site.url);
-            if (exists) {
-                return; // Skip duplicates
-            }
-
-            this.items.push({
-                id: (id++).toString(),
-                name: site.name,
-                url: site.url,
-                icon: site.icon || "🌐",
-            });
-            importedCount++;
-        });
-
-        if (importedCount > 0) {
-            this.saveItems();
-            this.renderItems();
+    validateUrl(url) {
+        if (!URL.canParse(url)) {
+            alert("Please enter a valid URL (e.g., https://example.com)");
+            return false;
         }
-
-        return importedCount;
-    }
-
-    /**
-     * Export sites as JSON and download.
-     * @returns {number} The number of sites exported.
-     */
-    exportSites() {
-        if (this.items.length === 0) {
-            return 0;
-        }
-
-        const dataStr = JSON.stringify(
-            this.items.map(({ name, url, icon }) => ({ name, url, icon })),
-            null,
-            2,
-        );
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `nano-start-sites-${new Date().toISOString().split("T")[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
-        return this.items.length;
+        return true;
     }
 }
 

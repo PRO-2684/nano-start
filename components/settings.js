@@ -57,7 +57,55 @@ class SettingsManager extends EventTarget {
 
     /** Setup backup-related button listeners (import/export). */
     setupBackupButtons() {
-        // Import button (now in settings dialog)
+        // Export button
+        const exportBtn = document.getElementById("export-btn");
+        exportBtn?.addEventListener("click", () => {
+            try {
+                const exportSitesCheckbox = document.getElementById(
+                    "export-sites-checkbox",
+                );
+                const exportEnginesCheckbox = document.getElementById(
+                    "export-engines-checkbox",
+                );
+
+                const includeSites = exportSitesCheckbox?.checked;
+                const includeEngines = exportEnginesCheckbox?.checked;
+
+                if (!includeSites && !includeEngines) {
+                    alert("Please select at least one item to export.");
+                    return;
+                }
+
+                const exportData = {};
+
+                if (includeSites) {
+                    exportData.sites = this.siteManager.exportToObject();
+                }
+
+                if (includeEngines) {
+                    exportData.engines = this.engineManager.exportToObject();
+                }
+
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `nano-start-backup-${new Date().toISOString().split("T")[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                console.info("Successfully exported backup data.");
+            } catch (error) {
+                console.error("Error exporting data:", error);
+                alert("Failed to export data.");
+            }
+        });
+
+        // Import button
         const importBtn = document.getElementById("import-btn");
         const importFileInput = document.getElementById("import-file-input");
 
@@ -69,42 +117,68 @@ class SettingsManager extends EventTarget {
             try {
                 const file = e.target.files[0];
                 if (!file) return;
+
                 const text = await file.text();
                 const json = JSON.parse(text);
-                if (!Array.isArray(json)) {
-                    alert("Invalid JSON format. Expected an array of sites.");
+
+                if (typeof json !== "object" || json === null) {
+                    alert("Invalid JSON format. Expected a backup object.");
+                    e.target.value = "";
                     return;
                 }
-                const importedCount = this.siteManager.importSites(json);
-                e.target.value = ""; // Reset input
-                if (importedCount > 0) {
-                    console.info(
-                        `Successfully imported ${importedCount} site(s).`,
-                    );
-                } else {
-                    alert("No valid sites found in the file.");
-                }
-            } catch (error) {
-                console.error("Error importing sites:", error);
-                alert("Failed to import sites. Please check the file format.");
-            }
-        });
 
-        // Export button
-        const exportBtn = document.getElementById("export-btn");
-        exportBtn?.addEventListener("click", () => {
-            try {
-                const exportedCount = this.siteManager.exportSites();
-                if (exportedCount > 0) {
+                const importSitesCheckbox = document.getElementById(
+                    "import-sites-checkbox",
+                );
+                const importEnginesCheckbox = document.getElementById(
+                    "import-engines-checkbox",
+                );
+
+                const includeSites = importSitesCheckbox?.checked;
+                const includeEngines = importEnginesCheckbox?.checked;
+
+                let sitesImported = 0;
+                let enginesImported = 0;
+
+                if (includeSites && json.sites && Array.isArray(json.sites)) {
+                    sitesImported = this.siteManager.importFromArray(
+                        json.sites,
+                    );
+                }
+
+                if (
+                    includeEngines &&
+                    json.engines &&
+                    Array.isArray(json.engines)
+                ) {
+                    enginesImported = this.engineManager.importFromArray(
+                        json.engines,
+                    );
+                }
+
+                e.target.value = ""; // Reset input
+
+                const messages = [];
+                if (sitesImported > 0) {
+                    messages.push(`${sitesImported} site(s)`);
+                }
+                if (enginesImported > 0) {
+                    messages.push(`${enginesImported} search engine(s)`);
+                }
+
+                if (messages.length > 0) {
                     console.info(
-                        `Successfully exported ${exportedCount} site(s).`,
+                        `Successfully imported ${messages.join(" and ")}.`,
                     );
                 } else {
-                    console.info("No sites to export.");
+                    alert(
+                        "No valid data found in the file or all items were duplicates.",
+                    );
                 }
             } catch (error) {
-                console.error("Error exporting sites:", error);
-                alert("Failed to export sites.");
+                console.error("Error importing data:", error);
+                alert("Failed to import data. Please check the file format.");
+                e.target.value = "";
             }
         });
     }

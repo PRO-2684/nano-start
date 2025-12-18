@@ -62,12 +62,17 @@ class SearchEngineManager extends CardManager {
      */
     validateUrl(url) {
         if (!url.includes("{query}")) {
-            alert("Search URL must contain {query} placeholder.");
+            alert(
+                "Search URL must contain {query} placeholder.\nExample: https://www.google.com/search?q={query}",
+            );
             return false;
         }
         // Remove {query} and validate the base URL
         const baseUrl = url.replace("{query}", "test");
         if (!URL.canParse(baseUrl)) {
+            alert(
+                "Please enter a valid URL.\nExample: https://www.google.com/search?q={query}",
+            );
             return false;
         }
         return true;

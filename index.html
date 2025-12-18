@@ -64,17 +64,63 @@
                 <!-- Backup Section -->
                 <section class="settings-section">
                     <h3>💾 Backup</h3>
-                    <div class="settings-actions">
-                        <button id="import-btn" class="secondary-btn">
-                            📥 Import Sites
-                        </button>
+
+                    <!-- Export subsection -->
+                    <div class="backup-subsection">
+                        <h4>Export Data</h4>
+                        <div class="backup-checkboxes">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    id="export-sites-checkbox"
+                                    checked
+                                />
+                                Pinned Sites
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    id="export-engines-checkbox"
+                                    checked
+                                />
+                                Search Engines
+                            </label>
+                        </div>
                         <button id="export-btn" class="secondary-btn">
-                            📤 Export Sites
+                            📤 Export Data
                         </button>
                     </div>
+
+                    <!-- Import subsection -->
+                    <div class="backup-subsection">
+                        <h4>Import Data</h4>
+                        <div class="backup-checkboxes">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    id="import-sites-checkbox"
+                                    checked
+                                />
+                                Pinned Sites
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    id="import-engines-checkbox"
+                                    checked
+                                />
+                                Search Engines
+                            </label>
+                        </div>
+                        <button id="import-btn" class="secondary-btn">
+                            📥 Import Data
+                        </button>
+                    </div>
+
                     <p class="settings-help">
-                        Export your sites as a JSON file for backup or transfer
-                        to another device.
+                        Export or import your data as a unified JSON file for
+                        backup or transfer to another device. Choose what to
+                        include using the checkboxes.
                     </p>
                 </section>
 
