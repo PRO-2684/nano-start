@@ -79,11 +79,11 @@ class SettingsManager extends EventTarget {
                 const exportData = {};
 
                 if (includeSites) {
-                    exportData.sites = this.siteManager.exportToObject();
+                    exportData.sites = this.siteManager.exportToJSON();
                 }
 
                 if (includeEngines) {
-                    exportData.engines = this.engineManager.exportToObject();
+                    exportData.engines = this.engineManager.exportToJSON();
                 }
 
                 const dataStr = JSON.stringify(exportData, null, 2);
@@ -141,9 +141,7 @@ class SettingsManager extends EventTarget {
                 let enginesImported = 0;
 
                 if (includeSites && json.sites && Array.isArray(json.sites)) {
-                    sitesImported = this.siteManager.importFromArray(
-                        json.sites,
-                    );
+                    sitesImported = this.siteManager.importFromJSON(json.sites);
                 }
 
                 if (
@@ -151,7 +149,7 @@ class SettingsManager extends EventTarget {
                     json.engines &&
                     Array.isArray(json.engines)
                 ) {
-                    enginesImported = this.engineManager.importFromArray(
+                    enginesImported = this.engineManager.importFromJSON(
                         json.engines,
                     );
                 }
