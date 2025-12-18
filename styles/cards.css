@@ -1,26 +1,10 @@
-/* Site Cards and Container */
-.sites-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 1.5em;
-
-    &:empty::before {
-        content: "No sites yet. Click the + button to add your first site!";
-        opacity: 0.6;
-    }
-}
-
-/* Card Item */
+/* Generic Card Item Styles */
 .card-item {
     position: relative;
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 8px;
-    padding: 1em;
     cursor: pointer;
-    transition-property: background-color, transform, border-left-color;
+    transition-property: background-color, transform, border-color;
     transition-duration: 0.4s;
     transition-timing-function: cubic-bezier(0, 0.73, 0.48, 1);
     text-decoration: none;
@@ -29,14 +13,11 @@
     flex-direction: row;
     align-items: center;
     gap: 0.75em;
-    max-width: 16em;
-    border-left: 2px solid transparent;
 
     &:hover {
         /* Only transform when not editing */
         &:not(.editing) {
             background-color: var(--card-hover);
-            transform: translateY(-2px);
         }
 
         .card-actions,
@@ -48,10 +29,6 @@
     &.dragging {
         opacity: 0.5;
         cursor: grabbing;
-    }
-
-    &.drag-over {
-        border-left-color: var(--text-color);
     }
 
     &.editing {
@@ -78,12 +55,9 @@
     }
 
     .site-icon {
-        width: 2.5em;
-        height: 2.5em;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5em;
         flex-shrink: 0;
 
         img {
@@ -115,7 +89,6 @@
     }
 
     .site-name {
-        font-size: 1.1em;
         font-weight: 500;
         word-break: break-word;
     }
@@ -128,8 +101,6 @@
 
     .card-actions {
         position: absolute;
-        top: 0.5em;
-        right: 0.5em;
         display: flex;
         gap: 0.25em;
         opacity: 0;
@@ -138,8 +109,6 @@
 
     .drag-handle {
         position: absolute;
-        top: 0.5em;
-        left: 0.5em;
         width: 28px;
         height: 28px;
         background-color: var(--card-bg);
@@ -198,6 +167,110 @@
     }
 }
 
+/* Site Cards - Card-style appearance */
+.sites-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5em;
+
+    &:empty::before {
+        content: "No sites yet. Click the + button to add your first site!";
+        opacity: 0.6;
+    }
+
+    > .card-item {
+        border-radius: 8px;
+        padding: 1em;
+        max-width: 16em;
+        border-left: 2px solid transparent;
+
+        &:hover:not(.editing) {
+            transform: translateY(-2px);
+        }
+
+        &.drag-over {
+            border-left-color: var(--text-color);
+        }
+
+        .site-icon {
+            width: 2.5em;
+            height: 2.5em;
+            font-size: 1.5em;
+        }
+
+        .site-name {
+            font-size: 1.1em;
+        }
+
+        .card-actions {
+            top: 0.5em;
+            right: 0.5em;
+        }
+
+        .drag-handle {
+            top: 0.5em;
+            left: 0.5em;
+        }
+    }
+}
+
+/* Search Engine Cards - List-style appearance */
+.search-engines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 1em;
+
+    > .card-item {
+        border-radius: 6px;
+        padding: 0.75em;
+        gap: 0.75em;
+        border-top: 2px solid transparent;
+
+        &.drag-over {
+            border-top-color: var(--text-color);
+        }
+
+        .site-icon {
+            width: 1.5em;
+            height: 1.5em;
+            font-size: 1.5em;
+        }
+
+        .site-name {
+            font-size: 1em;
+        }
+
+        .site-url {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-actions {
+            position: static;
+            opacity: 1;
+            margin-left: auto;
+        }
+
+        .drag-handle {
+            position: static;
+            opacity: 1;
+            order: -1;
+        }
+
+        &.editing {
+            .card-actions {
+                position: absolute;
+                top: 0.5em;
+                right: 0.5em;
+            }
+        }
+    }
+}
+
 .empty-state {
     text-align: center;
     padding: 3em;
@@ -208,9 +281,14 @@
     /* Sites */
     .sites-container {
         gap: 1em;
+
+        > .card-item {
+            min-height: 6em;
+        }
     }
 
-    .card-item {
-        min-height: 6em;
+    /* Search Engines */
+    .search-engines-list > .card-item {
+        font-size: 0.9em;
     }
 }

@@ -98,7 +98,7 @@ class SearchEngineManager extends CardManager {
      * @returns {string} The formatted URL.
      */
     formatUrl(url) {
-        return url.replace("{query}", "...");
+        return url;
     }
 
     /**
