@@ -28,26 +28,11 @@
 }
 
 /* Backup Section */
-.backup-subsection {
-    margin-bottom: 1.5em;
-
-    &:last-of-type {
-        margin-bottom: 0.75em;
-    }
-
-    h4 {
-        margin: 0 0 0.75em 0;
-        font-size: 1em;
-        font-weight: 500;
-        opacity: 0.8;
-    }
-}
-
 .backup-checkboxes {
     display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-    margin-bottom: 0.75em;
+    flex-direction: row;
+    gap: 1.5em;
+    margin-bottom: 1em;
 
     label {
         display: flex;
@@ -66,6 +51,21 @@
         &:hover {
             opacity: 0.8;
         }
+    }
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+}
+
+.backup-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75em;
+
+    @media (max-width: 600px) {
+        flex-direction: column;
     }
 }
 

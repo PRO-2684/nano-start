@@ -20,11 +20,6 @@ class CardManager extends EventTarget {
          */
         this.items = [];
         this.draggedElement = null;
-        /**
-         * Map to track delete confirmation timeouts by card element.
-         * @type {Map<HTMLElement, number>}
-         */
-        this.deleteTimeouts = new Map();
     }
 
     /** Initialize the manager: load items, render cards. */
@@ -231,9 +226,9 @@ class CardManager extends EventTarget {
         }
 
         // Clear timeout if exists
-        if (this.deleteTimeouts.has(card)) {
-            clearTimeout(this.deleteTimeouts.get(card));
-            this.deleteTimeouts.delete(card);
+        if (card.deleteTimeoutId) {
+            clearTimeout(card.deleteTimeoutId);
+            card.deleteTimeoutId = null;
         }
     }
 
@@ -487,7 +482,7 @@ class CardManager extends EventTarget {
                 const timeoutId = setTimeout(() => {
                     this.clearDeleteConfirmation(card);
                 }, 3000);
-                this.deleteTimeouts.set(card, timeoutId);
+                card.deleteTimeoutId = timeoutId;
             }
         });
 
@@ -605,19 +600,19 @@ class CardManager extends EventTarget {
     }
 
     /**
-     * Export items to a plain object (without IDs).
+     * Export items to a JSON array object (without IDs).
      * @returns {Array} Array of items without IDs.
      */
-    exportToObject() {
+    exportToJSON() {
         return this.items.map(({ name, url, icon }) => ({ name, url, icon }));
     }
 
     /**
-     * Import items from array, appending to existing items.
+     * Import items from JSON array object, appending to existing items.
      * @param {Array} itemsData - Array of item objects to import.
      * @returns {number} The number of items successfully imported.
      */
-    importFromArray(itemsData) {
+    importFromJSON(itemsData) {
         let importedCount = 0;
         let id = Date.now();
 

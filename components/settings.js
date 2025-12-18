@@ -61,15 +61,15 @@ class SettingsManager extends EventTarget {
         const exportBtn = document.getElementById("export-btn");
         exportBtn?.addEventListener("click", () => {
             try {
-                const exportSitesCheckbox = document.getElementById(
-                    "export-sites-checkbox",
+                const backupSitesCheckbox = document.getElementById(
+                    "backup-sites-checkbox",
                 );
-                const exportEnginesCheckbox = document.getElementById(
-                    "export-engines-checkbox",
+                const backupEnginesCheckbox = document.getElementById(
+                    "backup-engines-checkbox",
                 );
 
-                const includeSites = exportSitesCheckbox?.checked;
-                const includeEngines = exportEnginesCheckbox?.checked;
+                const includeSites = backupSitesCheckbox?.checked;
+                const includeEngines = backupEnginesCheckbox?.checked;
 
                 if (!includeSites && !includeEngines) {
                     alert("Please select at least one item to export.");
@@ -127,15 +127,15 @@ class SettingsManager extends EventTarget {
                     return;
                 }
 
-                const importSitesCheckbox = document.getElementById(
-                    "import-sites-checkbox",
+                const backupSitesCheckbox = document.getElementById(
+                    "backup-sites-checkbox",
                 );
-                const importEnginesCheckbox = document.getElementById(
-                    "import-engines-checkbox",
+                const backupEnginesCheckbox = document.getElementById(
+                    "backup-engines-checkbox",
                 );
 
-                const includeSites = importSitesCheckbox?.checked;
-                const includeEngines = importEnginesCheckbox?.checked;
+                const includeSites = backupSitesCheckbox?.checked;
+                const includeEngines = backupEnginesCheckbox?.checked;
 
                 let sitesImported = 0;
                 let enginesImported = 0;
