@@ -55,15 +55,6 @@ class SearchEngineManager extends CardManager {
         return [...DEFAULT_SEARCH_ENGINES];
     }
 
-    // Alias for compatibility
-    get engines() {
-        return this.items;
-    }
-
-    set engines(value) {
-        this.items = value;
-    }
-
     /**
      * Override URL validation to check for {query} placeholder.
      * @param {string} url - The URL to validate.

@@ -22,7 +22,7 @@ class SearchManager {
         this.siteManager = siteManager;
         this.settingsManager = settingsManager;
         this.debounceTimer = null;
-        this.fuse = new Fuse(this.siteManager.sites, {
+        this.fuse = new Fuse(this.siteManager.items, {
             keys: [
                 {
                     name: "name",
@@ -129,7 +129,7 @@ class SearchManager {
 
         // Listen for site list updates to refresh Fuse index
         this.siteManager.addEventListener("sitesUpdated", () => {
-            this.fuse.setCollection(this.siteManager.sites);
+            this.fuse.setCollection(this.siteManager.items);
         });
     }
 
@@ -167,7 +167,7 @@ class SearchManager {
      * @returns {SearchResult[]} Array of matching site objects.
      */
     filterSites(query) {
-        this.fuse.setCollection(this.siteManager.sites);
+        this.fuse.setCollection(this.siteManager.items);
         const fuseResults = this.fuse.search(query);
         return fuseResults.map((result) => result.item);
     }

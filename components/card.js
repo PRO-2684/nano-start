@@ -128,10 +128,12 @@ class CardManager extends EventTarget {
 
         this.items.push(item);
         this.saveItems();
-        this.renderItems();
 
-        // Start editing the new item
-        this.startEditing(item.id);
+        // Append the new card directly
+        const card = this.createCard(item);
+        this.container.appendChild(card);
+        this.setCardEditing(card, item, true);
+        this.selectItemName(card);
     }
 
     /**
@@ -178,7 +180,15 @@ class CardManager extends EventTarget {
         this.items[itemIndex].url = url;
 
         this.saveItems();
-        this.setCardEditing(card, this.items[itemIndex], false);
+
+        // Update the card in place
+        const item = this.items[itemIndex];
+        this.setCardEditing(card, item, false);
+
+        // Update card href if it's a link (for SiteManager)
+        if (card.href) {
+            card.href = url;
+        }
     }
 
     /**
@@ -222,16 +232,22 @@ class CardManager extends EventTarget {
      * @returns {boolean} Whether deletion is allowed.
      */
     deleteItem(itemId) {
+        const card = this.container.querySelector(`[data-id="${itemId}"]`);
+        if (!card) return false;
+
+        // Remove from DOM first
+        card.remove();
+
+        // Remove from data
         const index = this.items.findIndex((s) => s.id === itemId);
         if (index === -1) return false;
 
         this.items.splice(index, 1);
         this.saveItems();
-        this.renderItems();
         return true;
     }
 
-    /** Render all items as cards. */
+    /** Render all items as cards (only used on initial load). */
     renderItems() {
         this.container.innerHTML = "";
         this.items.forEach((item) => {
@@ -558,16 +574,17 @@ class CardManager extends EventTarget {
 
         if (draggedIndex === -1 || targetIndex === -1) return;
 
-        // Remove dragged item
+        // Move the DOM element directly
+        targetCard.before(draggedCard);
+
+        // Update the items array to match DOM order
         const movedItem = this.items.splice(draggedIndex, 1)[0];
         const newTargetIndex =
             draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
-
-        // Insert before target
         this.items.splice(newTargetIndex, 0, movedItem);
 
         this.saveItems();
-        this.renderItems();
+        targetCard.classList.remove("drag-over");
     }
 }
 

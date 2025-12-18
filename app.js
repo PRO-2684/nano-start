@@ -25,7 +25,7 @@ function initApp() {
     // Setup add site button
     const addBtn = document.getElementById("add-site-btn");
     addBtn.addEventListener("click", () => {
-        siteManager.addNewSite();
+        siteManager.addNewItem();
     });
 }
 

@@ -34,15 +34,6 @@ class SiteManager extends CardManager {
         return [];
     }
 
-    // Alias for compatibility
-    get sites() {
-        return this.items;
-    }
-
-    set sites(value) {
-        this.items = value;
-    }
-
     /**
      * Override createCardElement to make site cards clickable links.
      * @param {Object} item - The site data.
@@ -54,11 +45,6 @@ class SiteManager extends CardManager {
         card.draggable = false;
         card.rel = "noopener noreferrer";
         return card;
-    }
-
-    // Keep the original method name for backward compatibility
-    addNewSite() {
-        this.addNewItem();
     }
 
     /**
@@ -76,12 +62,12 @@ class SiteManager extends CardManager {
             }
 
             // Check for duplicates by URL
-            const exists = this.sites.some((s) => s.url === site.url);
+            const exists = this.items.some((s) => s.url === site.url);
             if (exists) {
                 return; // Skip duplicates
             }
 
-            this.sites.push({
+            this.items.push({
                 id: (id++).toString(),
                 name: site.name,
                 url: site.url,
@@ -103,12 +89,12 @@ class SiteManager extends CardManager {
      * @returns {number} The number of sites exported.
      */
     exportSites() {
-        if (this.sites.length === 0) {
+        if (this.items.length === 0) {
             return 0;
         }
 
         const dataStr = JSON.stringify(
-            this.sites.map(({ name, url, icon }) => ({ name, url, icon })),
+            this.items.map(({ name, url, icon }) => ({ name, url, icon })),
             null,
             2,
         );
@@ -123,7 +109,7 @@ class SiteManager extends CardManager {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        return this.sites.length;
+        return this.items.length;
     }
 }
 
