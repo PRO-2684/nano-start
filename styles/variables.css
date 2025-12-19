@@ -25,4 +25,7 @@
     /* Input Colors */
     --input-bg: light-dark(#ffffff, #2a2a2a);
     --input-border: light-dark(#cccccc, #3a3a3a);
+
+    /* Transition Duration */
+    --transition-duration: 0.2s;
 }

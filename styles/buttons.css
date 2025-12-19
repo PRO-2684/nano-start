@@ -27,7 +27,7 @@
     cursor: pointer;
     transition-property:
         background-color, border-color, translate, scale, opacity;
-    transition-duration: 0.3s;
+    transition-duration: var(--transition-duration);
     transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
     opacity: 0;
     translate: 0 1em;
@@ -64,7 +64,7 @@
     border-radius: 50%;
     cursor: pointer;
     transition-property: background-color, scale;
-    transition-duration: 0.2s;
+    transition-duration: var(--transition-duration);
     display: flex;
     align-items: center;
     justify-content: center;

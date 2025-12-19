@@ -14,7 +14,7 @@
     border: none;
     border-bottom: 1px solid var(--card-border);
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color var(--transition-duration) ease-in-out;
 
     &:focus {
         border-color: var(--text-color);
@@ -36,7 +36,7 @@
     max-height: 400px;
     overflow-y: auto;
     z-index: 100;
-    transition-duration: 0.2s;
+    transition-duration: var(--transition-duration);
     transition-property: opacity, translate, display;
     transition-behavior: allow-discrete;
     opacity: 1;
@@ -59,7 +59,7 @@
 .search-result-item {
     padding: 0.75em 1em;
     transition-property: background-color, border-left-color;
-    transition-duration: 0.2s;
+    transition-duration: var(--transition-duration);
     display: flex;
     align-items: center;
     gap: 0.75em;
