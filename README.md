@@ -2,14 +2,23 @@
 
 A minimal yet hackable browser start page.
 
+<details><summary>📸 Screenshots</summary>
+  
+  ![Main Page](./images/main.png)
+  
+  ![Settings Dialog](./images/settings.png)
+
+</details>
+
 ## Features
 
 - 🚀 **Vanilla JavaScript**: Pure JavaScript, HTML & CSS without bundlers or frameworks
 - 📌 **Pin & Reorder**: Add your favorite websites and reorder them with drag & drop
 - 💾 **localStorage**: All preferences are saved locally in your browser
-- 🎨 **Adaptive Theme**: Automatic light and dark theme using cutting-edge CSS features
+- 👷 **Service Worker**: Caches assets and icons for faster load times and offline access
+- 🎨 **Adaptive Theme**: Automatic light/dark theme and transitions using cutting-edge CSS features
 - 📱 **Offline First**: Service worker enables offline-first access
-- ⚡ **Fast & Lightweight**: No dependencies, minimal footprint
+- ⚡ **Fast & Lightweight**: Minimal dependencies, minimal footprint
 
 ## Usage
 
@@ -68,4 +77,4 @@ Works on most modern browsers. Backwards compatibility is not guaranteed.
 
 ## License
 
-See [LICENSE](LICENSE) file for details.
+AGPL-3.0. See [LICENSE](./LICENSE) file for details.
