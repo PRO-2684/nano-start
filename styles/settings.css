@@ -193,6 +193,31 @@ dialog[open]::backdrop {
     }
 }
 
+/* About Section */
+.about-description {
+    margin: 0 0 1em 0;
+    line-height: 1.6;
+    opacity: 0.9;
+
+    strong {
+        opacity: 1;
+    }
+}
+
+.about-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+    margin-bottom: 1em;
+}
+
+.about-version {
+    margin: 0;
+    font-size: 0.85em;
+    opacity: 0.6;
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     /* Dialog */
     dialog {

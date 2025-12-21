@@ -23,6 +23,7 @@ class SettingsManager extends EventTarget {
     init() {
         this.engineManager.init();
         this.setupEventListeners();
+        this.loadVersionInfo();
     }
 
     /**
@@ -32,6 +33,74 @@ class SettingsManager extends EventTarget {
      */
     getEngineSearchResults(query) {
         return this.engineManager.getSearchResults(query);
+    }
+
+    /** Load version information from service worker. */
+    async loadVersionInfo() {
+        const versionElement = document.querySelector(".about-version");
+        if (!versionElement) {
+            console.warn("Version element not found");
+            return;
+        }
+
+        try {
+            console.log("Loading version info from service worker...");
+
+            // Wait for service worker to be ready and controlling
+            const registration = await navigator.serviceWorker.ready;
+            console.log("Service worker ready:", registration);
+
+            // If no controller yet, wait for it
+            if (!navigator.serviceWorker.controller) {
+                console.log("Waiting for service worker to take control...");
+                // Service worker needs to take control first
+                await new Promise((resolve) => {
+                    navigator.serviceWorker.addEventListener(
+                        "controllerchange",
+                        resolve,
+                        { once: true },
+                    );
+                });
+                console.log("Service worker now controlling");
+            }
+
+            // Listen for response with timeout
+            const handleMessage = (event) => {
+                if (event.data.type === "VERSION_INFO") {
+                    console.log("Received version info:", event.data);
+                    versionElement.textContent = `Version ${event.data.version}`;
+                    navigator.serviceWorker.removeEventListener(
+                        "message",
+                        handleMessage,
+                    );
+                }
+            };
+
+            navigator.serviceWorker.addEventListener("message", handleMessage);
+
+            // Request version info from service worker
+            console.log("Sending GET_VERSION message to service worker");
+            navigator.serviceWorker.controller.postMessage({
+                type: "GET_VERSION",
+            });
+
+            // Fallback timeout - if no response in 2 seconds, show unknown
+            setTimeout(() => {
+                if (versionElement.textContent === "Loading version...") {
+                    console.warn(
+                        "Version info timeout - no response from service worker",
+                    );
+                    versionElement.textContent = "Version unknown";
+                    navigator.serviceWorker.removeEventListener(
+                        "message",
+                        handleMessage,
+                    );
+                }
+            }, 2000);
+        } catch (error) {
+            console.error("Error loading version info:", error);
+            versionElement.textContent = "Version unknown";
+        }
     }
 
     /** Setup all event listeners for the settings dialog. */
@@ -194,6 +263,9 @@ class SettingsManager extends EventTarget {
             }
 
             try {
+                console.log(
+                    "Sending CLEAR_ICON_CACHE message to service worker",
+                );
                 // Send message to service worker to clear icon cache
                 navigator.serviceWorker.controller.postMessage({
                     type: "CLEAR_ICON_CACHE",
@@ -203,6 +275,10 @@ class SettingsManager extends EventTarget {
                 const response = await new Promise((resolve) => {
                     const handler = (event) => {
                         if (event.data.type === "ICON_CACHE_CLEARED") {
+                            console.log(
+                                "Received ICON_CACHE_CLEARED response:",
+                                event.data,
+                            );
                             navigator.serviceWorker.removeEventListener(
                                 "message",
                                 handler,
@@ -217,6 +293,9 @@ class SettingsManager extends EventTarget {
 
                     // Timeout after 5 seconds
                     setTimeout(() => {
+                        console.warn(
+                            "Clear cache timeout - no response from service worker",
+                        );
                         navigator.serviceWorker.removeEventListener(
                             "message",
                             handler,

@@ -119,12 +119,17 @@ self.addEventListener("activate", (event) => {
 
 // Message event - handle commands from the app
 self.addEventListener("message", (event) => {
+    console.log("Service Worker: Received message:", event.data);
+
     if (event.data.type === "CLEAR_ICON_CACHE") {
+        console.log("Service Worker: Received CLEAR_ICON_CACHE request");
         event.waitUntil(
             caches
                 .delete(ICON_CACHE_NAME)
                 .then(() => {
-                    console.log("Icon cache cleared");
+                    console.log(
+                        "Service Worker: Icon cache cleared successfully",
+                    );
                     // Send confirmation back to the client
                     event.source.postMessage({
                         type: "ICON_CACHE_CLEARED",
@@ -132,7 +137,10 @@ self.addEventListener("message", (event) => {
                     });
                 })
                 .catch((error) => {
-                    console.error("Error clearing icon cache:", error);
+                    console.error(
+                        "Service Worker: Error clearing icon cache:",
+                        error,
+                    );
                     event.source.postMessage({
                         type: "ICON_CACHE_CLEARED",
                         success: false,
@@ -140,5 +148,18 @@ self.addEventListener("message", (event) => {
                     });
                 }),
         );
+    } else if (event.data.type === "GET_VERSION") {
+        // Return version information
+        console.log("Service Worker: Received GET_VERSION request");
+        const versionInfo = {
+            type: "VERSION_INFO",
+            version: VERSION,
+            cacheName: CACHE_NAME,
+            iconCacheName: ICON_CACHE_NAME,
+        };
+        console.log("Service Worker: Sending version info:", versionInfo);
+        event.source.postMessage(versionInfo);
+    } else {
+        console.warn("Service Worker: Unknown message type:", event.data.type);
     }
 });
