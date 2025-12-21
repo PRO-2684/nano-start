@@ -61,7 +61,16 @@ class SearchManager {
         this.resultsContainer.children[this.highlightedIndex]?.classList.remove(
             "highlighted",
         );
-        this.resultsContainer.children[value]?.classList.add("highlighted");
+        const highlightedItem = this.resultsContainer.children[value];
+        if (highlightedItem) {
+            highlightedItem.classList.add("highlighted");
+            // Scroll into view if needed
+            highlightedItem.scrollIntoView({
+                block: "nearest",
+                // container: "nearest",
+                behavior: "smooth",
+            });
+        }
     }
 
     /** Setup all event listeners for search input, keyboard navigation, and site updates. */
