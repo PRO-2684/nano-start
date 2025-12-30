@@ -370,6 +370,7 @@ class CardManager extends EventTarget {
 
         if (URL.canParse(item.icon)) {
             const img = document.createElement("img");
+            img.loading = "lazy";
             img.src = item.icon;
             img.alt = item.name;
             iconElement.appendChild(img);
