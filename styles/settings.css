@@ -212,10 +212,19 @@ dialog[open]::backdrop {
 }
 
 .about-version {
+    display: block;
     margin: 0;
     font-size: 0.85em;
     opacity: 0.6;
     text-align: center;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.9;
+        text-decoration: underline;
+    }
 }
 
 @media (max-width: 768px) {

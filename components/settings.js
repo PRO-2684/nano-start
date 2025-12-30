@@ -1,6 +1,9 @@
 "use strict";
 import { SearchEngineManager } from "./engine.js";
 
+/** GitHub repository URL */
+const GITHUB_REPO = "https://github.com/PRO-2684/nano-start";
+
 /** Manages application settings dialog and integrates various managers. */
 class SettingsManager extends EventTarget {
     /**
@@ -23,6 +26,7 @@ class SettingsManager extends EventTarget {
     init() {
         this.engineManager.init();
         this.setupEventListeners();
+        this.setupGitHubLinks();
         this.loadVersionInfo();
     }
 
@@ -33,6 +37,14 @@ class SettingsManager extends EventTarget {
      */
     getEngineSearchResults(query) {
         return this.engineManager.getSearchResults(query);
+    }
+
+    /** Setup GitHub repository links. */
+    setupGitHubLinks() {
+        const githubLink = document.getElementById("github-link");
+        if (githubLink) {
+            githubLink.href = GITHUB_REPO;
+        }
     }
 
     /** Load version information from service worker via API endpoint. */
@@ -52,15 +64,20 @@ class SettingsManager extends EventTarget {
                     `Failed to fetch version: ${response.status} ${response.statusText}`,
                 );
                 versionElement.textContent = "Version unknown";
+                versionElement.href = GITHUB_REPO;
                 return;
             }
 
             const data = await response.json();
             console.log("Received version info:", data);
+
+            // Update version text and link to GitHub tag
             versionElement.textContent = `Version ${data.version}`;
+            versionElement.href = `${GITHUB_REPO}/tree/v${data.version}`;
         } catch (error) {
             console.error("Error loading version info:", error);
             versionElement.textContent = "Version unknown";
+            versionElement.href = GITHUB_REPO;
         }
     }
 
