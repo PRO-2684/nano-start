@@ -164,10 +164,20 @@ class SearchManager {
      * @returns {SearchResult[]} Array of result objects with name, url, and icon properties.
      */
     getResults(query) {
-        const siteResults = this.filterSites(query);
-        const engineResults =
-            this.settingsManager.getEngineSearchResults(query);
-        return [...siteResults, ...engineResults];
+        const results = [];
+
+        // If query is a valid URL, add direct open option as first result
+        if (URL.canParse(query)) {
+            results.push({
+                name: "Open URL",
+                url: query,
+                icon: "🔗",
+            });
+        }
+
+        results.push(...this.filterSites(query));
+        results.push(...this.settingsManager.getEngineSearchResults(query));
+        return results;
     }
 
     /**
@@ -257,7 +267,8 @@ class SearchManager {
     formatUrl(url) {
         try {
             const urlObj = new URL(url);
-            return urlObj.hostname;
+            // Use original URL if hostname is empty
+            return urlObj.hostname || url;
         } catch (error) {
             return url;
         }
