@@ -128,24 +128,21 @@ dialog {
 
 /* Dialog Backdrop */
 dialog::backdrop {
+    will-change: background-color;
     background-color: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(0px);
     transition:
         background-color var(--transition-duration) ease-in-out,
-        backdrop-filter var(--transition-duration) ease-in-out,
         overlay var(--transition-duration) ease-in-out allow-discrete,
         display var(--transition-duration) ease-in-out allow-discrete;
 }
 
 dialog[open]::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 @starting-style {
     dialog[open]::backdrop {
         background-color: rgba(0, 0, 0, 0);
-        backdrop-filter: blur(0px);
     }
 }
 
