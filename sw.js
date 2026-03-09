@@ -1,7 +1,7 @@
 // Service Worker for nano-start
 "use strict";
 
-const VERSION = "0.1.3";
+const VERSION = "0.1.4";
 const CACHE_NAME = `nano-start-${VERSION}`;
 const ICON_CACHE_NAME = `icons-${VERSION}`;
 const APP_RESOURCE = [
