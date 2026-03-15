@@ -575,6 +575,7 @@ class CardManager extends EventTarget {
 
         const targetCard = e.currentTarget;
         const draggedCard = this.draggedElement;
+        targetCard?.classList?.remove?.("drag-over");
 
         if (!targetCard || !draggedCard || targetCard === draggedCard) return;
 
@@ -597,7 +598,6 @@ class CardManager extends EventTarget {
         this.items.splice(newTargetIndex, 0, movedItem);
 
         this.saveItems();
-        targetCard.classList.remove("drag-over");
     }
 
     /**
