@@ -37,6 +37,8 @@ A minimal yet hackable browser start page.
     - Click on the icon to edit; You can provide text, emoji or urls
 3. Click the **✓** button or press `Enter`
 
+You can also drag and drop links from other websites to the start page to pin them. The website name will be inferred from the link text and title, falling back to the URL if necessary.
+
 #### Editing Sites
 
 1. Hover over the site card and press the **✎** button

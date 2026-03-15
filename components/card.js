@@ -19,7 +19,16 @@ class CardManager extends EventTarget {
          * @type {Array<{id: string, name: string, url: string, icon: string}>}
          */
         this.items = [];
+        /**
+         * The element being dragged.
+         * @type {HTMLElement|null}
+         */
         this.draggedElement = null;
+        /**
+         * DOMParser instance for parsing HTML strings (used in drag-drop from external sources).
+         * @type {DOMParser}
+         */
+        this.parser = new DOMParser();
     }
 
     /** Initialize the manager: load items, render cards. */
@@ -508,6 +517,60 @@ class CardManager extends EventTarget {
     }
 
     /**
+     * Determine the drag type.
+     * @param {DragEvent} e - The drag event.
+     * @returns {string|null} The drag type.
+     */
+    static getDragType(e) {
+        if (e.dataTransfer.types.includes("text/uri-list")) {
+            // Dragging a link from outside the app
+            return "external-link";
+        } else if (
+            e.currentTarget &&
+            e.dataTransfer.types.length === 1 &&
+            e.dataTransfer.types[0] === "text/html"
+        ) {
+            // Dragging within the app (reordering)
+            return "reorder";
+        }
+        return null;
+    }
+
+    /**
+     * Try to get a link from given `DragEvent` object.
+     * @param {DragEvent} dragEvent - The DragEvent object.
+     * @returns {object|null} An object with `name` and `url` if a valid link is found, otherwise null.
+     */
+    getLinkFromDragEvent(dragEvent) {
+        const type = CardManager.getDragType(dragEvent);
+        if (type !== "external-link") {
+            return null;
+        }
+
+        const dataTransfer = dragEvent.dataTransfer;
+        const url = dataTransfer.getData("text/uri-list");
+        let text = dataTransfer.getData("text/plain") || url;
+        if (text === url) {
+            // The browser-provided text is not helpful, try to parse the HTML content for a better title
+            const html = dataTransfer.getData("text/html");
+            if (html) {
+                const parsed = this.parser.parseFromString(html, "text/html");
+                for (const anchor of parsed.querySelectorAll("a")) {
+                    if (anchor.href === url) {
+                        text =
+                            anchor.textContent.trim() ||
+                            anchor.getAttribute("title") ||
+                            url;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return { name: text, url: url };
+    }
+
+    /**
      * Handle drag start event.
      * @param {DragEvent} e - The drag event.
      */
@@ -540,7 +603,14 @@ class CardManager extends EventTarget {
      */
     handleDragOver(e) {
         e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
+        const type = CardManager.getDragType(e);
+        if (type === "reorder") {
+            e.dataTransfer.dropEffect = "move";
+        } else if (type === "external-link") {
+            e.dataTransfer.dropEffect = "copy";
+        } else {
+            e.dataTransfer.dropEffect = "none";
+        }
     }
 
     /**
@@ -573,31 +643,72 @@ class CardManager extends EventTarget {
         e.preventDefault();
         e.stopPropagation();
 
+        const type = CardManager.getDragType(e);
         const targetCard = e.currentTarget;
         const draggedCard = this.draggedElement;
         targetCard?.classList?.remove?.("drag-over");
+        switch (type) {
+            case "reorder": {
+                if (!targetCard || !draggedCard || targetCard === draggedCard)
+                    return;
 
-        if (!targetCard || !draggedCard || targetCard === draggedCard) return;
+                const draggedIndex = this.items.findIndex(
+                    (s) => s.id === draggedCard.dataset.id,
+                );
+                const targetIndex = this.items.findIndex(
+                    (s) => s.id === targetCard.dataset.id,
+                );
 
-        const draggedIndex = this.items.findIndex(
-            (s) => s.id === draggedCard.dataset.id,
-        );
-        const targetIndex = this.items.findIndex(
-            (s) => s.id === targetCard.dataset.id,
-        );
+                if (draggedIndex === -1 || targetIndex === -1) return;
 
-        if (draggedIndex === -1 || targetIndex === -1) return;
+                // Move the DOM element directly
+                targetCard.before(draggedCard);
 
-        // Move the DOM element directly
-        targetCard.before(draggedCard);
+                // Update the items array to match DOM order
+                const movedItem = this.items.splice(draggedIndex, 1)[0];
+                const newTargetIndex =
+                    draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+                this.items.splice(newTargetIndex, 0, movedItem);
 
-        // Update the items array to match DOM order
-        const movedItem = this.items.splice(draggedIndex, 1)[0];
-        const newTargetIndex =
-            draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
-        this.items.splice(newTargetIndex, 0, movedItem);
+                this.saveItems();
+                break;
+            }
+            case "external-link": {
+                if (!targetCard) return;
+                const targetIndex = this.items.findIndex(
+                    (s) => s.id === targetCard.dataset.id,
+                );
+                if (targetIndex === -1) return;
 
-        this.saveItems();
+                const linkData = this.getLinkFromDragEvent(e);
+                if (!linkData) return;
+                const { name, url } = linkData;
+
+                // Check for duplicates by URL
+                const exists = this.items.some((s) => s.url === url);
+                if (exists) {
+                    alert("This link already exists in your list.");
+                    return;
+                }
+
+                const newItem = {
+                    id: Date.now().toString(),
+                    name: name,
+                    url: url,
+                    icon: "🌐",
+                };
+                this.items.splice(targetIndex, 0, newItem);
+                this.saveItems();
+
+                // Create and insert the new card
+                const newCard = this.createCard(newItem);
+                targetCard.before(newCard);
+                break;
+            }
+            default:
+                console.log("Unknown drop:", e);
+                break;
+        }
     }
 
     /**
