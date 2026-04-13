@@ -69,6 +69,17 @@ You can also drag and drop links from other websites to the start page to pin th
 
 When hovering over the add button **+**, a gear icon **⚙️** will appear. Click it to open the settings dialog. You can also open it by pressing `Ctrl + ,`.
 
+### Modifier Keys
+
+`Ctrl`, `Shift` or `Alt` + click on websites will work just as [you'd expect it](https://support.google.com/chrome/answer/157179?hl=en&co=GENIE.Platform%3DDesktop#zippy=%2Cmouse-shortcuts). For example, in Chrome:
+
+- `Ctrl` + click will open the website in a new background tab
+- `Shift` + click will open the website in a new window
+- `Ctrl` + `Shift` + click will open the website in a new foreground tab
+- `Alt` + click will download the website as an HTML file
+
+These modifier keys also work when using `Enter` to activate search results. For example, `Ctrl` + `Enter` will open the highlighted website in a new background tab.
+
 ### Advanced Customization
 
 TBD
