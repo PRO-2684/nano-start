@@ -85,11 +85,23 @@ class SettingsManager extends EventTarget {
     setupEventListeners() {
         // Open dialog
         const settingsBtn = document.getElementById("settings-btn");
-        settingsBtn?.addEventListener("click", () => this.openDialog());
+        settingsBtn?.addEventListener("click", () => this.dialog.showModal());
 
         // Close dialog
         const closeBtn = document.getElementById("close-settings-btn");
-        closeBtn?.addEventListener("click", () => this.closeDialog());
+        closeBtn?.addEventListener("click", () => this.dialog.close());
+
+        // Toggle dialog with `Ctrl + ,`
+        document.addEventListener("keydown", (e) => {
+            if (e.ctrlKey && e.key === ",") {
+                e.preventDefault();
+                if (this.dialog.open) {
+                    this.dialog.close();
+                } else {
+                    this.dialog.showModal();
+                }
+            }
+        });
 
         // Add custom search engine
         const addEngineBtn = document.getElementById("add-search-engine-btn");
@@ -268,16 +280,6 @@ class SettingsManager extends EventTarget {
                 alert("Failed to clear icon cache.");
             }
         });
-    }
-
-    /** Open the settings dialog. */
-    openDialog() {
-        this.dialog.showModal();
-    }
-
-    /** Close the settings dialog. */
-    closeDialog() {
-        this.dialog.close();
     }
 }
 

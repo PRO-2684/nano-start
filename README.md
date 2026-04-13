@@ -67,7 +67,7 @@ You can also drag and drop links from other websites to the start page to pin th
 
 ### Settings
 
-When hovering over the add button **+**, a gear icon **⚙️** will appear. Click it to open the settings dialog.
+When hovering over the add button **+**, a gear icon **⚙️** will appear. Click it to open the settings dialog. You can also open it by pressing `Ctrl + ,`.
 
 ### Advanced Customization
 
