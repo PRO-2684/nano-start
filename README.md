@@ -4,9 +4,9 @@ A minimal yet hackable browser start page.
 
 <details><summary>📸 Screenshots</summary>
   
-  ![Main Page](./images/main.png)
+![Main Page](./images/main.png)
   
-  ![Settings Dialog](./images/settings.png)
+![Settings Dialog](./images/settings.png)
 
 </details>
 
